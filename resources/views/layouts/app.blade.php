@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <title>{{ config('app.name', 'FacturaIA') }}</title>
+
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        
+        @php
+        $theme = session('theme', 'blue');
+        $themeColors = [
+            'blue' => '#2563eb',
+            'indigo' => '#6366f1',
+            'purple' => '#a855f7',
+            'pink' => '#ec4899',
+            'red' => '#ef4444',
+            'orange' => '#f97316',
+            'green' => '#22c55e',
+            'teal' => '#14b8a6',
+            'cyan' => '#06b6d4',
+        ];
+        $primaryColor = $themeColors[$theme] ?? '#2563eb';
+        @endphp
+        
+        <style>
+            :root {
+                --theme-primary: {{ $primaryColor }};
+                --theme-primary-hover: {{ $primaryColor }};
+            }
+            .bg-theme-primary { background-color: var(--theme-primary); }
+            .text-theme-primary { color: var(--theme-primary); }
+            .border-theme-primary { border-color: var(--theme-primary); }
+            .hover\:bg-theme-primary:hover { background-color: var(--theme-primary); }
+            .focus\:ring-theme-primary:focus { --tw-ring-color: var(--theme-primary); }
+            
+            /* Botones */
+            .btn-primary {
+                background-color: var(--theme-primary);
+            }
+            .btn-primary:hover {
+                filter: brightness(110%);
+            }
+            
+            /* Links y textos */
+            a.text-theme-primary:hover {
+                color: var(--theme-primary);
+            }
+        </style>
+        <style>[x-cloak] { display: none !important; }</style>
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-50">
+            @include('layouts.navigation')
+
+            @if (isset($header))
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endif
+
+            <main class="py-6">
+                @yield('content')
+            </main>
+        </div>
+    </body>
+</html>

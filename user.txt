@@ -1,0 +1,14 @@
+Verificar en la base de datos
+Deben existir al menos:
+admin@example.com con role admin (usuario administrador por defecto)
+rcharles84@gmail.com con role admin (nuevo admin)
+superadmin@example.com con role superadmin (nuevo superadmin)
+demo@example.com con role user (usuario de demostración)
+Iniciar sesión y comprobar permisos
+Admin (admin@example.com) y Super Admin (superadmin@example.com) deben poder acceder a /users y a las áreas administrativas.
+Usuario normal (demo@example.com) no debe ver las rutas administrativas.
+Además, prueba: un superadmin debe ver/usar las mismas áreas que un admin.
+Notas de seguridad
+
+Noor4322@ y SuperSecret123! son contraseñas de ejemplo para entornos de desarrollo. Cambia a contraseñas seguras en producción.
+Considera forzar un cambio de contraseña en el primer inicio de sesión de cuentas nuevas.
