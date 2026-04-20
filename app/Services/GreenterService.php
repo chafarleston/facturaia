@@ -295,6 +295,20 @@ class GreenterService
     {
         $customer = $invoice->customer;
         $width = 76;
+        // Hash block to display below QR
+        $hashBlock = '';
+        if (!empty($invoice->codigo_hash)) {
+            $hashBlock = '<div class="text-center" style="font-family: monospace; font-size: 10px; margin-top:6px;">Hash: '.$invoice->codigo_hash.'</div>';
+        }
+        // QR image placeholder for the ticket
+        $qrImg = '';
+        if ($qrUrl) {
+            $qrImg = '<div class="text-center" style="margin-top:6px;"><img src="'.$qrUrl.'" style="width: 90px; height: 90px;" alt="SUNAT QR"></div>';
+        }
+        $hashBlock = '';
+        if (!empty($invoice->codigo_hash)) {
+            $hashBlock = '<div class="text-center" style="font-family: monospace; font-size: 10px; margin-top:6px;">Hash: '.$invoice->codigo_hash.'</div>';
+        }
         
         $style = '
         <style>
@@ -420,8 +434,12 @@ class GreenterService
         </div>
         ';
         $qrImg = '';
+        $hashBlock = '';
         if ($qrUrl) {
             $qrImg = '<div class="text-center" style="margin-top:6px;"><img src="'.$qrUrl.'" style="width: 90px; height: 90px;" alt="SUNAT QR"></div>';
+        }
+        if (!empty($invoice->codigo_hash)) {
+            $hashBlock = '<div class="text-center" style="font-family: monospace; font-size: 10px; margin-top:6px;">Hash: '.$invoice->codigo_hash.'</div>';
         }
         
         return '<!DOCTYPE html>
@@ -439,8 +457,8 @@ class GreenterService
                 ' . $itemsHeader . '
                 ' . $itemsBody . '
                 ' . $totals . '
-                ' . $sunatInfo . '
-                ' . $footer . ' ' . $qrImg . '
+                ' . $qrImg . ' ' . $hashBlock . ' ' . $sunatInfo . '
+                ' . $footer . '
             </div>
         </body>
         </html>';
@@ -448,6 +466,16 @@ class GreenterService
     
     private function buildStyledHtml($invoice, $company, $qrUrl = null)
     {
+        // QR image placeholder for A4
+        $qrImg = '';
+        // Hash block below QR
+        $hashBlock = '';
+        if (!empty($invoice->codigo_hash)) {
+            $hashBlock = '<div class="text-center" style="font-family: monospace; font-size: 10px; margin-top:6px;">Hash: '.$invoice->codigo_hash.'</div>';
+        }
+        if ($qrUrl) {
+            $qrImg = '<div class="text-center" style="margin-top:6px;"><img src="'.$qrUrl.'" style="width: 90px; height: 90px;" alt="SUNAT QR"></div>';
+        }
         $customer = $invoice->customer;
         
         $style = '
@@ -685,7 +713,7 @@ class GreenterService
             ' . $itemsTable . '
             ' . $totals . '
             ' . $sunatInfo . '
-            ' . $footer . ' ' . $qrImg . '
+            ' . $footer . ' ' . $qrImg . ' ' . $hashBlock . '
         </body>
         </html>';
     }
@@ -713,8 +741,14 @@ class GreenterService
         try {
             $result = $this->see->send($greenterInvoice);
             
-            if ($result->isSuccess()) {
-                $xmlContent = $this->see->getFactory()->getLastXml();
+        if ($result->isSuccess()) {
+            $xmlContent = $this->see->getFactory()->getLastXml();
+            // Extract DigestValue from XML (SUNAT digest) and store as hash for PDF display
+            $digestValue = $this->extractDigestValueFromXml($xmlContent);
+            if ($digestValue) {
+                $invoice->codigo_hash = $digestValue;
+                $invoice->save();
+            }
                 $cdrZip = $result->getCdrZip();
                 
                 $cdrFileName = 'R-' . $company->ruc . '-' . $invoice->tipo_documento . '-' . $invoice->serie . '-' . str_pad($invoice->numero, 8, '0', STR_PAD_LEFT) . '.zip';
@@ -874,6 +908,32 @@ class GreenterService
         $greenter->setMtoImpVenta(round($totalBaseIgv + $totalIgv, 2));
         
         return $greenter;
+    }
+
+    /**
+     * Extracts the ds:DigestValue from the Signed XML returned by SUNAT.
+     * Falls back to null if not found.
+     */
+    private function extractDigestValueFromXml($xmlContent)
+    {
+        if (!$xmlContent) {
+            return null;
+        }
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        if (!$dom->loadXML($xmlContent)) {
+            libxml_clear_errors();
+            libxml_use_internal_errors(false);
+            return null;
+        }
+        libxml_clear_errors();
+        $xpath = new \DOMXPath($dom);
+        // Match any DigestValue node regardless of namespace prefix
+        $nodes = $xpath->query("//*[local-name()='DigestValue']");
+        if ($nodes->length > 0) {
+            return (string)$nodes->item(0)->nodeValue;
+        }
+        return null;
     }
 }
 

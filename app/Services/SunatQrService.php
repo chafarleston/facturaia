@@ -52,6 +52,13 @@ class SunatQrService
         $result = $writer->write($qrCode);
         file_put_contents($path, $result->getString());
 
+        // Return a data URI to ensure MPDF renders the image without needing external HTTP access
+        if (is_readable($path)) {
+            $imageData = base64_encode(file_get_contents($path));
+            return 'data:image/png;base64,' . $imageData;
+        }
+
+        // Fallback to a public URL if for some reason we can't read the file
         return asset('storage/qrcodes/' . $filename);
     }
 }

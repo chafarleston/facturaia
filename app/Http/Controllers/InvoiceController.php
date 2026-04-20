@@ -165,6 +165,19 @@ class InvoiceController extends Controller
 
         $serie->incrementNumber();
 
+        // Compute and save hash for data integrity
+        $hashSource = json_encode([
+            'serie' => $serie->serie,
+            'numero' => $numero,
+            'fecha_emision' => $validated['fecha_emision'],
+            'subtotal' => $subtotal,
+            'igv' => $igvTotal,
+            'total' => $total,
+            'customer' => $customerId,
+        ]);
+        $hash = hash('sha256', $hashSource);
+        $invoice->update(['codigo_hash' => $hash]);
+
         return redirect()->route('invoices.show', $invoice)
             ->with('success', 'Documento creado: ' . $invoice->full_number);
     }
@@ -263,33 +276,7 @@ class InvoiceController extends Controller
         }
     }
 
-public function generatePdf(Invoice $invoice)
-    {
-        try {
-            $greenterService = new GreenterService();
-            $pdfContent = $greenterService->generatePdf($invoice);
-            
-            return response($pdfContent)
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="factura-' . $invoice->full_number . '.pdf"');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al generar PDF: ' . $e->getMessage());
-        }
-    }
     
-    public function generateTicketPdf(Invoice $invoice)
-    {
-        try {
-            $greenterService = new GreenterService();
-            $pdfContent = $greenterService->generateTicketPdf($invoice);
-            
-            return response($pdfContent)
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="ticket-' . $invoice->full_number . '.pdf"');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al generar ticket: ' . $e->getMessage());
-        }
-    }
     
     public function destroy(Invoice $invoice)
     {
