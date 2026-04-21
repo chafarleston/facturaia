@@ -323,6 +323,13 @@ class InvoiceController extends Controller
         }
         return view('invoices.print_nv_ticket', compact('invoice'));
     }
+
+    public function nvIndex(Request $request)
+    {
+        // Use the existing index but force NV filter
+        $request->merge(['type' => 'NV']);
+        return $this->index($request);
+    }
     
     public function sendCreditNote(Request $request, Invoice $invoice)
     {

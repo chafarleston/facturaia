@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     });
     
     Route::get('/invoices/{invoice}/send', [InvoiceController::class, 'sendToSunat'])->name('invoices.send');
+    Route::get('/invoices/nv', [InvoiceController::class, 'nvIndex'])->name('invoices.nv');
     // Nota de Venta printing routes
     Route::get('/invoices/{invoice}/print/nv/a4', [InvoiceController::class, 'printNvA4'])->name('invoices.print_nv_a4');
     Route::get('/invoices/{invoice}/print/nv/ticket', [InvoiceController::class, 'printNvTicket'])->name('invoices.print_nv_ticket');
