@@ -53,6 +53,9 @@
                             <a href="{{ route('invoices.index', ['type' => '07']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm hover:bg-gray-100" style="color: var(--theme-primary)">
                                 {{ __('Notas de Crédito') }}
                             </a>
+                            <a href="{{ route('invoices.index', ['type' => 'NV']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm hover:bg-gray-100" style="color: var(--theme-primary)">
+                                {{ __('Notas de Venta') }}
+                            </a>
                             <div class="border-t border-gray-100"></div>
                             <a href="{{ route('invoices.create') }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm font-medium hover:bg-gray-100" style="color: var(--theme-primary)">
                                 + {{ __('Nuevo Comprobante') }}
