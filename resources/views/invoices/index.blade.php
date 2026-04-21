@@ -11,7 +11,7 @@
         @else
             <h1 class="text-2xl font-bold">Todos los Comprobantes</h1>
         @endif
-        <a href="{{ route('invoices.create', ['company_id' => $companyId]) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Nueva Factura</a>
+        <a href="{{ route('invoices.create', ['company_id' => $companyId]) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Generar Comprobante</a>
     </div>
 
     @if(session('success'))

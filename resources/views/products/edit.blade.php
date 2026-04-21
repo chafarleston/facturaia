@@ -76,22 +76,29 @@
 
 <script>
 const IGV_RATE = 1.18;
-
 const precioSinIgvInput = document.getElementById('precio_sin_igv');
 const precioConIgvInput = document.getElementById('precio_con_igv');
+let syncing = false;
 
-// Con IGV is the main field (what user sees and pays)
-// Sin IGV is calculated from Con IGV for display purposes only
+// Two-way synchronization with guard to avoid loops
 precioSinIgvInput.addEventListener('input', function() {
-    const sinIgv = parseFloat(this.value) || 0;
-    if (precioConIgvInput && precioConIgvInput.value !== '') {
-        precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
-    }
+  if (syncing) return;
+  const sinIgv = parseFloat(this.value) || 0;
+  if (precioConIgvInput) {
+    syncing = true;
+    precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
+    syncing = false;
+  }
 });
 
-// When user changes Con IGV, do not overwrite Sin IGV to preserve user edits
-precioConIgvInput.addEventListener('input', function() {
-    // The backend will compute and save the correct pairing
-});
+if (precioConIgvInput) {
+  precioConIgvInput.addEventListener('input', function() {
+    if (syncing) return;
+    const conIgv = parseFloat(this.value) || 0;
+    syncing = true;
+    precioSinIgvInput.value = (conIgv / IGV_RATE).toFixed(2);
+    syncing = false;
+  });
+}
 </script>
 @endsection

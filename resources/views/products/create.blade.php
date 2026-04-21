@@ -79,20 +79,27 @@ const IGV_RATE = 1.18;
 
 const precioSinIgvInput = document.getElementById('precio_sin_igv');
 const precioConIgvInput = document.getElementById('precio_con_igv');
+let syncing = false;
 
+// Two-way synchronization with guard to avoid loops
 precioSinIgvInput.addEventListener('input', function() {
-    const sinIgv = parseFloat(this.value) || 0;
-    if (precioConIgvInput && precioConIgvInput.value !== '') {
-        // Only recalc con IGV when user has not manually edited it
-        precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
-    }
+  if (syncing) return;
+  const sinIgv = parseFloat(this.value) || 0;
+  if (precioConIgvInput) {
+    syncing = true;
+    precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
+    syncing = false;
+  }
 });
 
 if (precioConIgvInput) {
-    precioConIgvInput.addEventListener('input', function() {
-        // Do not auto-recalculate sin IGV here to avoid overwriting user edits on Con IGV
-        // The server will handle the authoritative pricing when saving
-    });
+  precioConIgvInput.addEventListener('input', function() {
+    if (syncing) return;
+    const conIgv = parseFloat(this.value) || 0;
+    syncing = true;
+    precioSinIgvInput.value = (conIgv / IGV_RATE).toFixed(2);
+    syncing = false;
+  });
 }
 </script>
 @endsection

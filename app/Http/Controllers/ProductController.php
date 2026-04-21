@@ -36,11 +36,24 @@ class ProductController extends Controller
             'descripcion' => 'required',
             'codigo_sunat' => 'nullable|size:8',
             'umedida_codigo' => 'nullable|size:3',
-            'precio' => 'required|numeric|min:0',
+            // Accept either pre-existing 'precio' or the new 'precio_sin_igv'/'precio_con_igv' sent from UI
+            'precio' => 'nullable|numeric|min:0',
             'precio_minimo' => 'nullable|numeric|min:0',
             'tipo_afectacion' => 'required|in:GRA,EXO,INA,EXE',
             'igv_percent' => 'nullable|numeric|min:0|max:100',
         ]);
+
+        // Determine the effective price from UI fields
+        // If user posted a Con IGV price, prefer it; otherwise use Sin IGV price or existing 'precio'
+        if (is_null($validated['precio'] ?? null)) {
+            if ($request->input('precio_con_igv') !== null) {
+                $validated['precio'] = $request->input('precio_con_igv');
+            } elseif ($request->input('precio_sin_igv') !== null) {
+                $validated['precio'] = $request->input('precio_sin_igv');
+            } else {
+                $validated['precio'] = 0;
+            }
+        }
 
         $validated['umedida_codigo'] = $validated['umedida_codigo'] ?? 'NIU';
         $validated['igv_percent'] = $validated['igv_percent'] ?? 18;
@@ -68,11 +81,22 @@ class ProductController extends Controller
             'descripcion' => 'required',
             'codigo_sunat' => 'nullable|size:8',
             'umedida_codigo' => 'nullable|size:3',
-            'precio' => 'required|numeric|min:0',
+            'precio' => 'nullable|numeric|min:0',
             'precio_minimo' => 'nullable|numeric|min:0',
             'tipo_afectacion' => 'required|in:GRA,EXO,INA,EXE',
             'igv_percent' => 'nullable|numeric|min:0|max:100',
         ]);
+
+        // If precio not provided, derive from precio_con_igv or precio_sin_igv fields
+        if (is_null($validated['precio'] ?? null)) {
+            if ($request->input('precio_con_igv') !== null) {
+                $validated['precio'] = $request->input('precio_con_igv');
+            } elseif ($request->input('precio_sin_igv') !== null) {
+                $validated['precio'] = $request->input('precio_sin_igv');
+            } else {
+                $validated['precio'] = 0;
+            }
+        }
 
         $product->update($validated);
 
