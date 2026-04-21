@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerApiController;
 use App\Http\Controllers\DecolectaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SunatPadronController;
 use App\Http\Controllers\ThemeController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('products', ProductController::class);
         Route::resource('series', SerieController::class);
         Route::resource('users', \App\Http\Controllers\UserController::class);
+        // Descargar padrón SUNAT (manual)
+        Route::post('/companies/download-padron', [SunatPadronController::class, 'downloadPadron'])->name('sunat.padron.download');
     });
     
     Route::get('/invoices/{invoice}/send', [InvoiceController::class, 'sendToSunat'])->name('invoices.send');
