@@ -33,10 +33,12 @@ class SunatPadronController extends Controller
                         mkdir($dest, 0777, true);
                     }
                     $zip = new \ZipArchive();
-                    if ($zip->open($zipPath) === true) {
-                        $zip->extractTo($dest);
-                        $zip->close();
-                        @unlink($zipPath);
+                        if ($zip->open($zipPath) === true) {
+                            $zip->extractTo($dest);
+                            $zip->close();
+                            if (file_exists($zipPath)) {
+                                unlink($zipPath);
+                            }
                         $extractedFiles = count(array_filter(scandir($dest), function($f){ return !in_array($f, ['.','..']); }));
                         $message .= ' | Extraído a ' . $dest . ' (archivos: ' . $extractedFiles . ')';
                     }

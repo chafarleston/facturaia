@@ -32,12 +32,7 @@
                         {{ __('Usuarios') }}
                     </x-nav-link>
                     @endcan
-                    <div class="ml-2 inline-block">
-                        <form action="{{ route('sunat.padron.download') }}" method="POST" style="display:inline-block;">
-                            @csrf
-                            <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700" title="Descargar padrón SUNAT">Descargar padrón SUNAT</button>
-                        </form>
-                    </div>
+                    <!-- El botón de padrón SUNAT se movió a la página de Empresas -->
 
                     <!-- Generar Comprobante with Dropdown -->
                     <div class="relative" id="comprobante-menu">

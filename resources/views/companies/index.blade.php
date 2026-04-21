@@ -3,7 +3,13 @@
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Empresas</h1>
-        <a href="{{ route('companies.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Nueva Empresa</a>
+        <div class="flex items-center space-x-2">
+            <a href="{{ route('companies.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Nueva Empresa</a>
+            <form action="{{ route('sunat.padron.download') }}" method="POST" style="display:inline-block;">
+                @csrf
+                <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700" title="Descargar padrón SUNAT">Descargar padrón SUNAT</button>
+            </form>
+        </div>
     </div>
 
     @if(session('success'))
