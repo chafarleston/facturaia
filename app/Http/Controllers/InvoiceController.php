@@ -113,8 +113,9 @@ class InvoiceController extends Controller
         foreach ($itemsArray as $item) {
             $product = Product::findOrFail($item['product_id']);
             
-            // El precio que ingresa el usuario es el precio de venta (incluye IGV)
-            $precioVenta = round($item['cantidad'] * $item['precio'], 2);
+            // El precio que ingresa el usuario puede venir como Con IGV o Sin IGV. Preferimos Con IGV si proviene.
+            $precioConIgv = $item['precio_con_igv'] ?? $item['precio'] ?? 0;
+            $precioVenta = round($item['cantidad'] * $precioConIgv, 2);
             $base = round($precioVenta / 1.18, 2); // Separar IGV del subtotal
             $igv = round($precioVenta - $base, 2);
             
@@ -127,7 +128,7 @@ class InvoiceController extends Controller
                 'descripcion' => $product->descripcion,
                 'cantidad' => $item['cantidad'],
                 'umedida' => $product->umedida_codigo,
-                'precio_unitario' => $item['precio'], // Precio con IGV
+                'precio_unitario' => $precioConIgv, // Precio con IGV
                 'precio_venta' => $precioVenta,
                 'igv' => $igv,
                 'tipo_afectacion' => $product->tipo_afectacion,

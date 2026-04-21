@@ -26,19 +26,17 @@
                 <input type="text" name="descripcion" value="{{ $product->descripcion }}" class="w-full rounded border-gray-300 border px-3 py-2" required>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario (Sin IGV)</label>
-                <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario (Con IGV)</label>
                 <div class="relative">
                     <span class="absolute left-3 top-2 text-gray-500">S/</span>
-                    <input type="number" id="precio_con_igv" name="precio" value="{{ $product->precio }}" class="w-full rounded border-gray-300 border px-3 py-2 pl-8" required step="0.01" min="0">
+                    <input type="number" id="precio_con_igv" name="precio_con_igv" value="{{ $product->precio }}" class="w-full rounded border-gray-300 border px-3 py-2 pl-8" step="0.01" min="0">
                 </div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario (Sin IGV)</label>
                 <div class="relative">
                     <span class="absolute left-3 top-2 text-gray-500">S/</span>
-                    <input type="number" id="precio_sin_igv" value="{{ number_format($product->precio / 1.18, 2) }}" class="w-full rounded border-gray-300 border px-3 py-2 pl-8" step="0.01" min="0">
+                    <input type="number" id="precio_sin_igv" name="precio_sin_igv" value="{{ number_format($product->precio / 1.18, 2) }}" class="w-full rounded border-gray-300 border px-3 py-2 pl-8" step="0.01" min="0">
                 </div>
             </div>
             <div>
@@ -83,17 +81,17 @@ const precioSinIgvInput = document.getElementById('precio_sin_igv');
 const precioConIgvInput = document.getElementById('precio_con_igv');
 
 // Con IGV is the main field (what user sees and pays)
-// Sin IGV is calculated from Con IGV
+// Sin IGV is calculated from Con IGV for display purposes only
 precioSinIgvInput.addEventListener('input', function() {
     const sinIgv = parseFloat(this.value) || 0;
-    precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
+    if (precioConIgvInput && precioConIgvInput.value !== '') {
+        precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
+    }
 });
 
-// When user changes Con IGV, it becomes the main value
+// When user changes Con IGV, do not overwrite Sin IGV to preserve user edits
 precioConIgvInput.addEventListener('input', function() {
-    const conIgv = parseFloat(this.value) || 0;
-    // Con IGV is what gets saved to database
-    // Sin IGV is just for display/calculation
+    // The backend will compute and save the correct pairing
 });
 </script>
 @endsection

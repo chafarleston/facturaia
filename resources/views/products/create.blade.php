@@ -29,14 +29,14 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario (Sin IGV)</label>
                 <div class="relative">
                     <span class="absolute left-3 top-2 text-gray-500">S/</span>
-                    <input type="number" id="precio_sin_igv" name="precio" class="w-full rounded border-gray-300 border px-3 py-2 pl-8" required step="0.01" min="0" placeholder="0.00">
+                    <input type="number" id="precio_sin_igv" name="precio_sin_igv" class="w-full rounded border-gray-300 border px-3 py-2 pl-8" required step="0.01" min="0" placeholder="0.00">
                 </div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario (Con IGV)</label>
                 <div class="relative">
                     <span class="absolute left-3 top-2 text-gray-500">S/</span>
-                    <input type="number" id="precio_con_igv" class="w-full rounded border-gray-300 border px-3 py-2 pl-8" step="0.01" min="0" placeholder="0.00">
+                    <input type="number" id="precio_con_igv" name="precio_con_igv" class="w-full rounded border-gray-300 border px-3 py-2 pl-8" step="0.01" min="0" placeholder="0.00">
                 </div>
             </div>
             <div>
@@ -82,12 +82,17 @@ const precioConIgvInput = document.getElementById('precio_con_igv');
 
 precioSinIgvInput.addEventListener('input', function() {
     const sinIgv = parseFloat(this.value) || 0;
-    precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
+    if (precioConIgvInput && precioConIgvInput.value !== '') {
+        // Only recalc con IGV when user has not manually edited it
+        precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
+    }
 });
 
-precioConIgvInput.addEventListener('input', function() {
-    const conIgv = parseFloat(this.value) || 0;
-    precioSinIgvInput.value = (conIgv / IGV_RATE).toFixed(2);
-});
+if (precioConIgvInput) {
+    precioConIgvInput.addEventListener('input', function() {
+        // Do not auto-recalculate sin IGV here to avoid overwriting user edits on Con IGV
+        // The server will handle the authoritative pricing when saving
+    });
+}
 </script>
 @endsection
