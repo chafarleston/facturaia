@@ -1,7 +1,11 @@
 @extends('layouts.app')
 @section('content')
 <div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <h1 class="text-2xl font-bold mb-6">{{ $invoice->document_type_name }} {{ $invoice->full_number }}</h1>
+<h1 class="text-2xl font-bold mb-6">{{ $invoice->document_type_name }} {{ $invoice->full_number }}
+  @if($invoice->tipo_documento == 'NV')
+    <span class="ml-2 inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Nota de Venta</span>
+  @endif
+  </h1>
 
     <div class="bg-white shadow rounded-lg p-6 mb-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -16,11 +20,16 @@
                 </p>
             </div>
         </div>
-        @if($invoice->sunat_description)
-        <div class="mt-4 p-3 bg-gray-50 rounded">
-            <p class="text-sm text-gray-600">{{ $invoice->sunat_description }}</p>
-        </div>
-        @endif
+    @if($invoice->sunat_description)
+    <div class="mt-4 p-3 bg-gray-50 rounded">
+        <p class="text-sm text-gray-600">{{ $invoice->sunat_description }}</p>
+    </div>
+    @endif
+    @if($invoice->isNotaVenta())
+    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+        <p class="text-sm text-yellow-700">Nota de Venta - NV no envía a SUNAT. Este documento es para ventas internas.</p>
+    </div>
+    @endif
     </div>
 
     <div class="bg-white shadow rounded-lg overflow-hidden mb-6">

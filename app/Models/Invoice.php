@@ -60,4 +60,16 @@ class Invoice extends Model
         ];
         return $types[$this->tipo_documento] ?? $this->tipo_documento;
     }
+
+    // Nota de Venta helper
+    public function isNotaVenta(): bool
+    {
+        return $this->tipo_documento === 'NV';
+    }
+
+    // Scope to exclude from totals if needed
+    public function scopeExcludeFromTotals($query)
+    {
+        return $query->where('exclude_from_totals', false);
+    }
 }
