@@ -43,11 +43,13 @@ class SeriesSeeder extends Seeder
         }
 
         foreach ($entries as $e) {
+            // Determine document type by series code: Boleta usually uses 03, Factura 01
+            $tipoDocumento = in_array($e['serie'], ['BC01', 'BD01']) ? '03' : '01';
             Serie::updateOrCreate(
                 ['serie' => $e['serie']],
                 [
                     'serie' => $e['serie'],
-                    'tipo_documento' => '01',
+                    'tipo_documento' => $tipoDocumento,
                     'numero_actual' => 0,
                     'estado' => 1,
                     'company_id' => $company->id,

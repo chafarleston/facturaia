@@ -30,7 +30,7 @@
                 @else
                     <select name="serie_id" id="serie_id" class="w-full border rounded px-3 py-2 bg-gray-100" required onchange="updateTipoDocumento()">
                         @foreach($series as $serie)
-                            <option value="{{ $serie->id }}" data-tipo="{{ $serie->tipo_documento }}">{{ $serie->serie }} ({{ $serie->tipo_documento == '01' ? 'Factura' : 'Boleta' }})</option>
+                            <option value="{{ $serie->id }}" data-tipo="{{ $serie->tipo_documento }}" data-serie="{{ $serie->serie }}">{{ $serie->serie }} ({{ $serie->tipo_documento == '01' ? 'Factura' : 'Boleta' }})</option>
                         @endforeach
                     </select>
                 @endif
@@ -45,15 +45,28 @@
         function updateSerie() {
             const tipoDoc = document.getElementById('tipo_documento').value;
             const serieSelect = document.getElementById('serie_id');
-            const options = serieSelect.options;
-            
-            for (let i = 0; i < options.length; i++) {
-                const option = options[i];
-                const serieTipo = option.getAttribute('data-tipo');
+            if (!serieSelect) return;
+            const options = Array.from(serieSelect.options);
+            let firstMatchIndex = -1;
+            let preferredIndex = -1;
+            const preferredCode = tipoDoc === '01' ? 'FC01' : (tipoDoc === '03' ? 'BC01' : null);
+
+            for (let idx = 0; idx < options.length; idx++) {
+                const opt = options[idx];
+                const serieTipo = opt.getAttribute('data-tipo');
+                const serieCode = opt.getAttribute('data-serie');
                 if (serieTipo === tipoDoc) {
-                    serieSelect.selectedIndex = i;
-                    break;
+                    if (firstMatchIndex === -1) firstMatchIndex = idx;
+                    if (preferredCode && serieCode === preferredCode) {
+                        preferredIndex = idx;
+                        break;
+                    }
                 }
+            }
+            if (preferredIndex >= 0) {
+                serieSelect.selectedIndex = preferredIndex;
+            } else if (firstMatchIndex >= 0) {
+                serieSelect.selectedIndex = firstMatchIndex;
             }
         }
         
