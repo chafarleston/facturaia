@@ -52,8 +52,7 @@
                             <a href="{{ route('invoices.downloadXml', $invoice) }}" class="text-gray-600 hover:text-gray-900">XML</a>
                         @endif
                         @if($invoice->tipo_documento == 'NV')
-                            <a href="{{ route('invoices.print_nv_a4', $invoice) }}" class="ml-2 text-green-600">Imprimir NV A4</a>
-                            <a href="{{ route('invoices.print_nv_ticket', $invoice) }}" class="ml-2 text-green-600">Imprimir NV Ticket</a>
+                            <span class="ml-2 text-sm text-gray-500">Notas de Venta</span>
                         @endif
                     </td>
                 </tr>

@@ -12,7 +12,7 @@
   </head>
   <body>
   <div>
-    <h3>Nota de Venta - NV{{ $invoice->numero }}</h3>
+    <h3>Boleta de venta {{ $invoice->full_number }}</h3>
     <p>Fecha: {{ $invoice->fecha_emision }}</p>
     <p>Cliente: {{ $invoice->customer->nombre ?? '' }}</p>
   </div>
