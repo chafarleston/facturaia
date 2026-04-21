@@ -68,7 +68,7 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'company_id' => 'required|exists:companies,id',
-            'tipo_documento' => 'required|in:01,03',
+            'tipo_documento' => 'required|in:01,03,NV',
             'serie_id' => 'required|exists:series,id',
             'fecha_emision' => 'required|date',
         ], [
@@ -144,6 +144,7 @@ class InvoiceController extends Controller
         $formatter = new NumberFormatter('es', NumberFormatter::SPELLOUT);
         $totalLetras = ucfirst($formatter->formatCurrency($total, 'PEN'));
 
+        $excludeFromTotals = (isset($validated['tipo_documento']) && $validated['tipo_documento'] === 'NV');
         $invoice = Invoice::create([
             'company_id' => $validated['company_id'],
             'customer_id' => $customerId,
@@ -157,7 +158,8 @@ class InvoiceController extends Controller
             'igv' => $igvTotal,
             'total' => $total,
             'total_letras' => $totalLetras,
-            'sunat_estado' => 'PENDIENTE'
+            'sunat_estado' => 'PENDIENTE',
+            'exclude_from_totals' => $excludeFromTotals
         ]);
 
         foreach ($itemsData as $item) {
@@ -258,6 +260,11 @@ class InvoiceController extends Controller
 
     public function sendToSunat(Invoice $invoice)
     {
+        // Nota de Venta no se envía a SUNAT
+        if (isset($invoice->tipo_documento) && $invoice->tipo_documento === 'NV') {
+            return back()->with('success', 'Nota de Venta no se envía a SUNAT');
+        }
+
         try {
             \Log::info('Sending to SUNAT via Greenter', ['invoice' => $invoice->full_number, 'company' => $invoice->company->ruc]);
             
@@ -298,6 +305,23 @@ class InvoiceController extends Controller
     public function creditNoteForm(Invoice $invoice)
     {
         return view('invoices.credit-note', compact('invoice'));
+    }
+
+    // Nota de Venta impresiones
+    public function printNvA4(Invoice $invoice)
+    {
+        if ($invoice->tipo_documento !== 'NV') {
+            abort(404);
+        }
+        return view('invoices.print_nv_a4', compact('invoice'));
+    }
+
+    public function printNvTicket(Invoice $invoice)
+    {
+        if ($invoice->tipo_documento !== 'NV') {
+            abort(404);
+        }
+        return view('invoices.print_nv_ticket', compact('invoice'));
     }
     
     public function sendCreditNote(Request $request, Invoice $invoice)

@@ -18,6 +18,7 @@
                 <select name="tipo_documento" id="tipo_documento" class="w-full border rounded px-3 py-2" required onchange="updateSerie()">
                     <option value="01">Factura</option>
                     <option value="03">Boleta</option>
+                    <option value="NV">Nota de Venta</option>
                 </select>
             </div>
             <div>
@@ -48,7 +49,7 @@
             if (!serieSelect) return;
             const options = Array.from(serieSelect.options);
             // Prefer FC01 for Factura (01) and BC01 for Boleta (03)
-            const preferredCode = tipoDoc === '01' ? 'FC01' : (tipoDoc === '03' ? 'BC01' : null);
+            const preferredCode = tipoDoc === '01' ? 'FC01' : (tipoDoc === '03' ? 'BC01' : (tipoDoc === 'NV' ? 'NV0001' : null));
             // Try to select by preferred code first
             if (preferredCode) {
                 for (let idx = 0; idx < options.length; idx++) {
