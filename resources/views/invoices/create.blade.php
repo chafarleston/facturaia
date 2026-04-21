@@ -47,26 +47,27 @@
             const serieSelect = document.getElementById('serie_id');
             if (!serieSelect) return;
             const options = Array.from(serieSelect.options);
-            let firstMatchIndex = -1;
-            let preferredIndex = -1;
+            // Prefer FC01 for Factura (01) and BC01 for Boleta (03)
             const preferredCode = tipoDoc === '01' ? 'FC01' : (tipoDoc === '03' ? 'BC01' : null);
-
-            for (let idx = 0; idx < options.length; idx++) {
-                const opt = options[idx];
-                const serieTipo = opt.getAttribute('data-tipo');
-                const serieCode = opt.getAttribute('data-serie');
-                if (serieTipo === tipoDoc) {
-                    if (firstMatchIndex === -1) firstMatchIndex = idx;
-                    if (preferredCode && serieCode === preferredCode) {
-                        preferredIndex = idx;
-                        break;
+            // Try to select by preferred code first
+            if (preferredCode) {
+                for (let idx = 0; idx < options.length; idx++) {
+                    const opt = options[idx];
+                    const serieCode = opt.getAttribute('data-serie');
+                    if (serieCode === preferredCode) {
+                        serieSelect.selectedIndex = idx;
+                        return;
                     }
                 }
             }
-            if (preferredIndex >= 0) {
-                serieSelect.selectedIndex = preferredIndex;
-            } else if (firstMatchIndex >= 0) {
-                serieSelect.selectedIndex = firstMatchIndex;
+            // Fallback: select first option that matches the document type
+            for (let idx = 0; idx < options.length; idx++) {
+                const opt = options[idx];
+                const serieTipo = opt.getAttribute('data-tipo');
+                if (serieTipo === tipoDoc) {
+                    serieSelect.selectedIndex = idx;
+                    return;
+                }
             }
         }
         
