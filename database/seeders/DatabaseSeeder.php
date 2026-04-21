@@ -19,5 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(\Database\Seeders\SuperAdminSeeder::class);
         $this->call(\Database\Seeders\TestUsersSeeder::class);
         $this->call(\Database\Seeders\SeriesSeeder::class);
+		$this->call(\Database\Seeders\SunatProductSeeder::class);
+		
     }
 }
