@@ -15,7 +15,6 @@ class SeriesSeeder extends Seeder
             ['serie' => 'BC01', 'description' => 'NOTA DE CRÉDITO BOLETA'],
             ['serie' => 'FD01', 'description' => 'NOTA DE DÉBITO FACTURA'],
             ['serie' => 'BD01', 'description' => 'NOTA DE DÉBITO BOLETA'],
-            ['serie' => 'NV0001', 'description' => 'NOTA DE VENTA'],
             ['serie' => 'R001', 'description' => 'COMPROBANTE DE RETENCIÓN ELECTRÓNICA'],
             ['serie' => 'T001', 'description' => 'GUIA DE REMISIÓN REMITENTE'],
             ['serie' => 'P001', 'description' => 'COMPROBANTE DE PERCEPCIÓN ELECTRÓNICA'],
@@ -44,9 +43,9 @@ class SeriesSeeder extends Seeder
         }
 
         foreach ($entries as $e) {
-            // Determine document type by series code: NV (Nota de Venta) uses NV0001; Boleta 03; Factura 01
+            // Determine document type by series code: NV (Nota de Venta) uses NV01; Boleta 03; Factura 01
             $serieCode = $e['serie'];
-            $tipoDocumento = ($serieCode === 'NV0001') ? 'NV' : (in_array($serieCode, ['BC01', 'BD01']) ? '03' : '01');
+            $tipoDocumento = ($serieCode === 'NV01') ? 'NV' : (in_array($serieCode, ['BC01', 'BD01']) ? '03' : '01');
             Serie::updateOrCreate(
                 ['serie' => $e['serie']],
                 [
