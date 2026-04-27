@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/companies/{company}/set-main', [CompanyController::class, 'setMain'])->name('companies.setMain');
         Route::resource('customers', CustomerController::class)->parameters(['customers' => 'customer']);
         Route::resource('products', ProductController::class);
+        Route::resource('categories', CategoryController::class);
         Route::resource('series', SerieController::class);
         Route::resource('users', \App\Http\Controllers\UserController::class);
         // Descargar padrón SUNAT (manual)

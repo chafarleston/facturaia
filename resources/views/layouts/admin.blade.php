@@ -91,10 +91,27 @@
             </li>
             
             <li class="nav-item">
-              <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+              <a href="#" class="nav-link {{ request()->routeIs('products.*') || request()->routeIs('categories.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-box"></i>
-                <p>Productos</p>
+                <p>
+                  Productos
+                  <i class="fas fa-angle-left right"></i>
+                </p>
               </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Lista de Productos</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('categories.index') }}" class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Categorías</p>
+                  </a>
+                </li>
+              </ul>
             </li>
             
             <li class="nav-item">

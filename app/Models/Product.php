@@ -12,12 +12,17 @@ class Product extends Model
     protected $fillable = [
         'company_id', 'codigo', 'descripcion', 'codigo_sunat',
         'umedida_codigo', 'precio', 'precio_minimo', 'tipo_afectacion',
-        'igv_percent', 'estado'
+        'igv_percent', 'estado', 'category_id'
     ];
 
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public function invoiceItems()

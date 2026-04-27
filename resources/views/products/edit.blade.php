@@ -34,6 +34,15 @@
                 <label>Descripción</label>
                 <input type="text" name="descripcion" value="{{ $product->descripcion }}" class="form-control" required>
             </div>
+            <div class="form-group">
+                <label>Categoría</label>
+                <select name="category_id" class="form-control">
+                    <option value="">Sin categoría</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
