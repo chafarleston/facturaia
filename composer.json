@@ -11,7 +11,6 @@
         "ext-zip": "*",
         "doctrine/dbal": "^3.7",
         "endroid/qr-code": "^6.1",
-        "filament/filament": "3.0",
         "fruitcake/laravel-cors": "^2.0.5",
         "giansalex/peru-consult": "^4.5",
         "greenter/core": "^5.1",
