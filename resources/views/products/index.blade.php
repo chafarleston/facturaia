@@ -9,7 +9,15 @@
       <div class="card-header">
         <h3 class="card-title">Lista de Productos</h3>
         <div class="card-tools">
-          <a href="{{ route('products.create', ['company_id' => $companyId ?? null]) }}" class="btn btn-primary btn-sm">
+          <form method="GET" action="{{ route('products.index') }}" class="form-inline">
+            <input type="hidden" name="company_id" value="{{ $companyId ?? null }}">
+            <input type="text" name="search" class="form-control" placeholder="Buscar..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-secondary ml-1"><i class="fas fa-search"></i></button>
+            @if(request('search'))
+            <a href="{{ route('products.index', ['company_id' => $companyId ?? null]) }}" class="btn btn-link ml-1">Limpiar</a>
+            @endif
+          </form>
+          <a href="{{ route('products.create', ['company_id' => $companyId ?? null]) }}" class="btn btn-primary btn-sm ml-2">
             <i class="fas fa-plus"></i> Nuevo Producto
           </a>
         </div>
@@ -20,6 +28,7 @@
             <tr>
               <th>Código</th>
               <th>Descripción</th>
+              <th>Categoría</th>
               <th>Precio</th>
               <th>Tipo Afect.</th>
               <th>Stock</th>
@@ -31,6 +40,7 @@
             <tr>
               <td>{{ $product->codigo }}</td>
               <td>{{ $product->descripcion }}</td>
+              <td>{{ $product->category->nombre ?? '-' }}</td>
               <td>S/ {{ number_format($product->precio, 2) }}</td>
               <td>{{ $product->tipo_afectacion }}</td>
               <td>{{ $product->stock }}</td>
@@ -40,7 +50,7 @@
               </td>
             </tr>
             @empty
-            <tr><td colspan="6" class="text-center">No hay productos</td></tr>
+            <tr><td colspan="7" class="text-center">No hay productos</td></tr>
             @endforelse
           </tbody>
         </table>

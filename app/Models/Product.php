@@ -12,7 +12,11 @@ class Product extends Model
     protected $fillable = [
         'company_id', 'codigo', 'descripcion', 'codigo_sunat',
         'umedida_codigo', 'precio', 'precio_minimo', 'tipo_afectacion',
-        'igv_percent', 'estado', 'category_id'
+        'igv_percent', 'estado', 'category_id', 'stock'
+    ];
+
+    protected $casts = [
+        'stock' => 'integer',
     ];
 
     public function company()

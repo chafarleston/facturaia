@@ -113,6 +113,10 @@ class InvoiceController extends Controller
         foreach ($itemsArray as $item) {
             $product = Product::findOrFail($item['product_id']);
             
+            // Reducir stock
+            $product->stock = max(0, $product->stock - $item['cantidad']);
+            $product->save();
+            
             // El precio que ingresa el usuario puede venir como Con IGV o Sin IGV. Preferimos Con IGV si proviene.
             $precioConIgv = $item['precio_con_igv'] ?? $item['precio'] ?? 0;
             $precioVenta = round($item['cantidad'] * $precioConIgv, 2);

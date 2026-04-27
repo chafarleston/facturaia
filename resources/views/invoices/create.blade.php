@@ -116,8 +116,8 @@
                                 <select id="productSelect" class="form-control">
                                     <option value="">Seleccionar producto</option>
                                     @foreach($products as $product)
-                                        <option value="{{ $product->id }}" data-price="{{ $product->precio }}" data-code="{{ $product->codigo }}" data-name="{{ $product->descripcion }}">
-                                            {{ $product->codigo }} - {{ $product->descripcion }} - S/ {{ number_format($product->precio, 2) }}
+                                        <option value="{{ $product->id }}" data-price="{{ $product->precio }}" data-code="{{ $product->codigo }}" data-name="{{ $product->descripcion }}" data-stock="{{ $product->stock }}">
+                                            {{ $product->codigo }} - {{ $product->descripcion }} - S/ {{ number_format($product->precio, 2) }} (Stock: {{ $product->stock }})
                                         </option>
                                     @endforeach
                                 </select>
@@ -339,7 +339,21 @@ function agregarItem() {
     if (!option.value) { alert('Seleccione un producto'); return; }
     const qty = parseFloat(document.getElementById('itemQty').value);
     const price = Math.round(parseFloat(document.getElementById('itemPrice').value) * 100) / 100;
+    const stock = parseInt(option.dataset.stock) || 0;
+    
     if (!qty || !price) { alert('Ingrese cantidad y precio'); return; }
+    
+    // Verificar stock
+    if (stock < qty && stock > 0) {
+        if (!confirm('Stock insuficiente. Stock actual: ' + stock + '. ¿Desea generar Venta con saldo negativo?')) {
+            return;
+        }
+    } else if (stock === 0) {
+        if (!confirm('Stock en cero. ¿Desea generar Venta con saldo negativo?')) {
+            return;
+        }
+    }
+    
     items.push({ product_id: option.value, codigo: option.dataset.code, descripcion: option.dataset.name, cantidad: qty, precio: price });
     renderItems();
     select.value = '';

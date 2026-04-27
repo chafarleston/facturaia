@@ -6,6 +6,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\SerieController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\CustomerApiController;
 use App\Http\Controllers\DecolectaController;
 use App\Http\Controllers\ProfileController;
@@ -34,6 +36,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('customers', CustomerController::class)->parameters(['customers' => 'customer']);
         Route::resource('products', ProductController::class);
         Route::resource('categories', CategoryController::class);
+        Route::resource('suppliers', SupplierController::class);
+        Route::resource('purchases', PurchaseController::class);
         Route::resource('series', SerieController::class);
         Route::resource('users', \App\Http\Controllers\UserController::class);
         // Descargar padrón SUNAT (manual)

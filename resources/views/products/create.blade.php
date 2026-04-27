@@ -40,6 +40,10 @@
                     @endforeach
                 </select>
             </div>
+            <div class="form-group">
+                <label>Stock Inicial</label>
+                <input type="number" name="stock" class="form-control" value="0" min="0" placeholder="0">
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">

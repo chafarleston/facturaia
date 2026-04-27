@@ -43,6 +43,10 @@
                     @endforeach
                 </select>
             </div>
+            <div class="form-group">
+                <label>Stock</label>
+                <input type="number" name="stock" class="form-control" value="{{ $product->stock ?? 0 }}" min="0">
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">

@@ -12,8 +12,16 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $companyId = $request->company_id ?? Company::first()->id;
+        $search = $request->get('search');
+        
         $products = Product::where('company_id', $companyId)
             ->where('estado', 'ACTIVO')
+            ->when($search, function($q) use ($search) {
+                $q->where(function($query) use ($search) {
+                    $query->where('codigo', 'like', "%{$search}%")
+                          ->orWhere('descripcion', 'like', "%{$search}%");
+                });
+            })
             ->paginate(15);
 
         return view('products.index', compact('products', 'companyId'));
@@ -43,19 +51,11 @@ class ProductController extends Controller
             'precio_minimo' => 'nullable|numeric|min:0',
             'tipo_afectacion' => 'required|in:GRA,EXO,INA,EXE',
             'igv_percent' => 'nullable|numeric|min:0|max:100',
-            'category_id' => 'nullable|exists:categories,id',
+'category_id' => 'nullable|exists:categories,id',
+            'stock' => 'nullable|integer|min:0',
         ]);
 
-        if (is_null($validated['precio'] ?? null)) {
-            if ($request->input('precio_con_igv') !== null) {
-                $validated['precio'] = $request->input('precio_con_igv');
-            } elseif ($request->input('precio_sin_igv') !== null) {
-                $validated['precio'] = $request->input('precio_sin_igv');
-            } else {
-                $validated['precio'] = 0;
-            }
-        }
-
+        $validated['stock'] = $validated['stock'] ?? 0;
         $validated['umedida_codigo'] = $validated['umedida_codigo'] ?? 'NIU';
         $validated['igv_percent'] = $validated['igv_percent'] ?? 18;
 
@@ -88,6 +88,7 @@ class ProductController extends Controller
             'tipo_afectacion' => 'required|in:GRA,EXO,INA,EXE',
             'igv_percent' => 'nullable|numeric|min:0|max:100',
             'category_id' => 'nullable|exists:categories,id',
+            'stock' => 'nullable|integer|min:0',
         ]);
 
         if (is_null($validated['precio'] ?? null)) {
