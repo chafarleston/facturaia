@@ -345,11 +345,11 @@ function agregarItem() {
     
     // Verificar stock
     if (stock < qty && stock > 0) {
-        if (!confirm('Stock insuficiente. Stock actual: ' + stock + '. ¿Desea generar Venta con saldo negativo?')) {
+        if (!confirm('Stock insuficiente. Stock actual: ' + stock + '. ¿Desea generar Venta con Saldo negativo?')) {
             return;
         }
     } else if (stock === 0) {
-        if (!confirm('Stock en cero. ¿Desea generar Venta con saldo negativo?')) {
+        if (!confirm('Stock en cero. ¿Desea generar Venta con Saldo negativo?')) {
             return;
         }
     }
