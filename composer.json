@@ -11,6 +11,7 @@
         "ext-zip": "*",
         "doctrine/dbal": "^3.7",
         "endroid/qr-code": "^6.1",
+        "filament/filament": "3.0",
         "fruitcake/laravel-cors": "^2.0.5",
         "giansalex/peru-consult": "^4.5",
         "greenter/core": "^5.1",
@@ -51,7 +52,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

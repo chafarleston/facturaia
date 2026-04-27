@@ -44,20 +44,20 @@
                         </button>
 
                         <div id="comprobante-dropdown" class="absolute left-0 z-50 hidden w-48 py-1 mt-2 bg-white rounded-md shadow-lg">
-                            <a href="{{ route('invoices.index', ['type' => '01']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm hover:bg-gray-100" style="color: var(--theme-primary)">
+                            <a href="{{ route('invoices.index', ['type' => '01']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 {{ __('Facturas') }}
                             </a>
-                            <a href="{{ route('invoices.index', ['type' => '03']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm hover:bg-gray-100" style="color: var(--theme-primary)">
+                            <a href="{{ route('invoices.index', ['type' => '03']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 {{ __('Boletas') }}
                             </a>
-                            <a href="{{ route('invoices.index', ['type' => '07']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm hover:bg-gray-100" style="color: var(--theme-primary)">
+                            <a href="{{ route('invoices.index', ['type' => '07']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 {{ __('Notas de Crédito') }}
                             </a>
-                            <a href="{{ route('invoices.index', ['type' => 'NV']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm hover:bg-gray-100" style="color: var(--theme-primary)">
+                            <a href="{{ route('invoices.index', ['type' => 'NV']) }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 {{ __('Notas de Venta') }}
                             </a>
                             <div class="border-t border-gray-100"></div>
-                            <a href="{{ route('invoices.create') }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm font-medium hover:bg-gray-100" style="color: var(--theme-primary)">
+                            <a href="{{ route('invoices.create') }}" onclick="closeDropdown()" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
                                 + {{ __('Nuevo Comprobante') }}
                             </a>
                         </div>
@@ -65,32 +65,13 @@
                 </div>
             </div>
 
-            <!-- Debug: Mostrar info de usuario autenticado -->
+            <!-- Settings Dropdown -->
             @auth
             <div class="hidden sm:flex sm:items-center sm:ml-6">
-                <div class="mr-4 text-sm text-gray-600">
-                    [<span id="debug-user">{{ Auth::user()->name }}</span>]
-                </div>
-                <!-- Theme Selector -->
-                <div class="mr-4">
-                    <select id="theme-selector" onchange="changeTheme(this.value)" class="text-sm border-gray-300 rounded-md focus:ring focus:ring-opacity-50" style="padding: 4px 8px;">
-                        <option value="blue" {{ session('theme', 'blue') == 'blue' ? 'selected' : '' }}>Azul</option>
-                        <option value="indigo" {{ session('theme') == 'indigo' ? 'selected' : '' }}>Índigo</option>
-                        <option value="purple" {{ session('theme') == 'purple' ? 'selected' : '' }}>Púrpura</option>
-                        <option value="pink" {{ session('theme') == 'pink' ? 'selected' : '' }}>Rosa</option>
-                        <option value="red" {{ session('theme') == 'red' ? 'selected' : '' }}>Rojo</option>
-                        <option value="orange" {{ session('theme') == 'orange' ? 'selected' : '' }}>Naranja</option>
-                        <option value="green" {{ session('theme') == 'green' ? 'selected' : '' }}>Verde</option>
-                        <option value="teal" {{ session('theme') == 'teal' ? 'selected' : '' }}>Teal</option>
-                        <option value="cyan" {{ session('theme') == 'cyan' ? 'selected' : '' }}>Cian</option>
-                    </select>
-                </div>
-
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none">
-                    <div>{{ Auth::user()->name ?? 'Usuario' }}</div>
-
+                            <div>{{ Auth::user()->name }}</div>
                             <div class="ml-1">
                                 <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -198,21 +179,4 @@ document.addEventListener('click', function(event) {
         dropdown.classList.add('hidden');
     }
 });
-
-function changeTheme(theme) {
-    fetch('{{ route("theme.change") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ theme: theme })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        }
-    });
-}
 </script>
