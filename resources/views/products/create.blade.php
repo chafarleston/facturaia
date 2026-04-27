@@ -14,12 +14,9 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Código SUNAT (Catálogo UBL 2.1)</label>
-                <select name="codigo_sunat" class="w-full rounded border-gray-300 border px-3 py-2">
-                    <option value="">Seleccionar...</option>
-                    @foreach(\App\Models\SunatProduct::orderBy('descripcion')->get() as $sunat)
-                        <option value="{{ $sunat->codigo }}">{{ $sunat->codigo }} - {{ $sunat->descripcion }}</option>
-                    @endforeach
-                </select>
+                <input type="text" id="sunat-search" placeholder="Buscar código SUNAT..." class="w-full rounded border border-gray-300 px-3 py-2" autocomplete="off">
+                <input type="hidden" name="codigo_sunat" id="codigo_sunat" value="">
+                <div id="sunat-results" class="hidden absolute z-10 mt-1 bg-white border border-gray-200 rounded-md w-full max-h-48 overflow-auto"></div>
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
@@ -75,6 +72,52 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sunatSearch = document.getElementById('sunat-search');
+  const codigoSunat = document.getElementById('codigo_sunat');
+  const resultsBox = document.getElementById('sunat-results');
+
+  if (!sunatSearch) return;
+
+  let timeout = null;
+  sunatSearch.addEventListener('input', function() {
+    const q = this.value.trim();
+    if (timeout) clearTimeout(timeout);
+    if (q.length < 2) {
+      resultsBox?.classList.add('hidden');
+      return;
+    }
+    timeout = setTimeout(() => {
+      fetch('{{ route("sunat-products.search") }}?query=' + encodeURIComponent(q))
+        .then(r => r.json())
+        .then(list => {
+          resultsBox.innerHTML = '';
+          if (list.length === 0) {
+            resultsBox.classList.add('hidden');
+            return;
+          }
+          list.forEach(item => {
+            const div = document.createElement('div');
+            div.textContent = item.codigo + ' - ' + item.descripcion;
+            div.className = 'px-3 py-1 hover:bg-gray-100 cursor-pointer';
+            div.style.cursor = 'pointer';
+            div.onclick = () => {
+              sunatSearch.value = item.codigo + ' - ' + item.descripcion;
+              codigoSunat.value = item.codigo;
+              resultsBox.classList.add('hidden');
+            };
+            resultsBox.appendChild(div);
+          });
+          resultsBox.classList.remove('hidden');
+        });
+    }, 200);
+  });
+  // Hide on blur
+  sunatSearch.addEventListener('blur', () => {
+    setTimeout(() => { resultsBox.classList.add('hidden'); }, 150);
+  });
+});
+</script>
 const IGV_RATE = 1.18;
 
 const precioSinIgvInput = document.getElementById('precio_sin_igv');
@@ -101,5 +144,78 @@ if (precioConIgvInput) {
     syncing = false;
   });
 }
-</script>
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // SUNAT search integration
+    const sunatSearch = document.getElementById('sunat-search');
+    const codigoSunat = document.getElementById('codigo_sunat');
+    const resultsBox = document.getElementById('sunat-results');
+    if (sunatSearch) {
+      let timeout = null;
+      sunatSearch.addEventListener('input', function() {
+        const q = this.value.trim();
+        if (timeout) clearTimeout(timeout);
+        if (q.length < 2) {
+          resultsBox?.classList.add('hidden');
+          return;
+        }
+        timeout = setTimeout(() => {
+          fetch('{{ route("sunat-products.search") }}?query=' + encodeURIComponent(q))
+            .then(r => r.json())
+            .then(list => {
+              resultsBox.innerHTML = '';
+              if (list.length === 0) {
+                resultsBox.classList.add('hidden');
+                return;
+              }
+              list.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item.codigo + ' - ' + item.descripcion;
+                div.className = 'px-3 py-1 hover:bg-gray-100 cursor-pointer';
+                div.onclick = () => {
+                  sunatSearch.value = item.codigo + ' - ' + item.descripcion;
+                  codigoSunat.value = item.codigo;
+                  resultsBox.classList.add('hidden');
+                };
+                resultsBox.appendChild(div);
+              });
+              resultsBox.classList.remove('hidden');
+            });
+        }, 200);
+      });
+      sunatSearch.addEventListener('blur', () => {
+        setTimeout(() => { resultsBox.classList.add('hidden'); }, 150);
+      });
+    }
+
+    // Price synchronization
+    const IGV_RATE = 1.18;
+    const precioSinIgvInput = document.getElementById('precio_sin_igv');
+    const precioConIgvInput = document.getElementById('precio_con_igv');
+    let syncing = false;
+    if (precioSinIgvInput) {
+      precioSinIgvInput.addEventListener('input', function() {
+        if (syncing) return;
+        const sinIgv = parseFloat(this.value) || 0;
+        if (precioConIgvInput) {
+          syncing = true;
+          precioConIgvInput.value = (sinIgv * IGV_RATE).toFixed(2);
+          syncing = false;
+        }
+      });
+    }
+    if (precioConIgvInput) {
+      precioConIgvInput.addEventListener('input', function() {
+        if (syncing) return;
+        const conIgv = parseFloat(this.value) || 0;
+        if (precioSinIgvInput) {
+          syncing = true;
+          precioSinIgvInput.value = (conIgv / IGV_RATE).toFixed(2);
+          syncing = false;
+        }
+      });
+    }
+  });
+  </script>
 @endsection

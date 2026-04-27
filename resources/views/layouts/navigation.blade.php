@@ -65,9 +65,12 @@
                 </div>
             </div>
 
-            <!-- Settings Dropdown + Theme Selector -->
+            <!-- Debug: Mostrar info de usuario autenticado -->
             @auth
             <div class="hidden sm:flex sm:items-center sm:ml-6">
+                <div class="mr-4 text-sm text-gray-600">
+                    [<span id="debug-user">{{ Auth::user()->name }}</span>]
+                </div>
                 <!-- Theme Selector -->
                 <div class="mr-4">
                     <select id="theme-selector" onchange="changeTheme(this.value)" class="text-sm border-gray-300 rounded-md focus:ring focus:ring-opacity-50" style="padding: 4px 8px;">
