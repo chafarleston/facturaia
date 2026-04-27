@@ -5,6 +5,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\SerieController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerApiController;
 use App\Http\Controllers\DecolectaController;
 use App\Http\Controllers\ProfileController;
