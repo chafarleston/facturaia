@@ -1,60 +1,80 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+@section('title', 'Empresas')
+@section('page_title', 'Empresas')
+
 @section('content')
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Empresas</h1>
-        <div class="flex items-center space-x-2">
-            <a href="{{ route('companies.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Nueva Empresa</a>
-            <form action="{{ route('sunat.padron.download') }}" method="POST" style="display:inline-block;">
-                @csrf
-                <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700" title="Descargar padrón SUNAT">Descargar padrón SUNAT</button>
-            </form>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Lista de Empresas</h3>
+        <div class="card-tools">
+          <a href="{{ route('companies.create') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Nueva Empresa
+          </a>
+          <form action="{{ route('sunat.padron.download') }}" method="POST" style="display:inline;">
+            @csrf
+            <button type="submit" class="btn btn-info btn-sm" title="Descargar padrón SUNAT">
+              <i class="fas fa-download"></i> Descargar padrón SUNAT
+            </button>
+          </form>
         </div>
-    </div>
-
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
-    @endif
-
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">RUC</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Razón Social</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
+          <thead>
+            <tr>
+              <th>RUC</th>
+              <th>Razón Social</th>
+              <th>Email</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
                 @forelse($companies as $company)
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $company->ruc }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $company->razon_social }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $company->email }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $company->is_main ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">{{ $company->is_main ? 'PRINCIPAL' : $company->estado }}</span></td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <a href="{{ route('companies.show', $company) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Ver</a>
-                        <a href="{{ route('companies.edit', $company) }}" class="text-yellow-600 hover:text-yellow-900 mr-3">Editar</a>
-                        @if(!$company->is_main)
-                        <form action="{{ route('companies.setMain', $company) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="text-blue-600 hover:text-blue-900" onclick="return confirm('¿Establecer como empresa principal?')">Principal</button>
-                        </form>
-                        @endif
-                        <form action="{{ route('companies.destroy', $company) }}" method="POST" class="inline ml-3">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('¿Eliminar empresa?')">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay empresas</td></tr>
-                @endforelse
-            </tbody>
+                    <td>
+                @if($company->estado === 'ACTIVO')
+                  <span class="badge badge-success">ACTIVO</span>
+                @else
+                  <span class="badge badge-secondary">{{ $company->estado }}</span>
+                @endif
+              </td>
+              <td>
+                <a href="{{ route('companies.show', $company) }}" class="btn btn-info btn-xs" title="Ver">
+                  <i class="fas fa-eye"></i>
+                </a>
+                <a href="{{ route('companies.edit', $company) }}" class="btn btn-warning btn-xs" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </a>
+                @if(!$company->is_main)
+                <form action="{{ route('companies.setMain', $company) }}" method="POST" style="display:inline;">
+                  @csrf
+                  <button type="submit" class="btn btn-primary btn-xs" title="Establecer principal" onclick="return confirm('¿Establecer como empresa principal?')">
+                    <i class="fas fa-star"></i>
+                  </button>
+                </form>
+                @endif
+                <form action="{{ route('companies.destroy', $company) }}" method="POST" style="display:inline;">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-danger btn-xs" title="Eliminar" onclick="return confirm('¿Eliminar empresa?')">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            @empty
+            <tr><td colspan="5" class="text-center">No hay empresas</td></tr>
+            @endforelse
+          </tbody>
         </table>
+      </div>
     </div>
+  </div>
 </div>
 @endsection

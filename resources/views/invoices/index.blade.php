@@ -1,67 +1,67 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+@section('title', 'Comprobantes')
+@section('page_title', 
+    $tipoDocumento == '01' ? 'Facturas' : 
+    ($tipoDocumento == '03' ? 'Boletas' : 
+    ($tipoDocumento == '07' ? 'Notas de Crédito' : 'Todos los Comprobantes'))
+)
+
 @section('content')
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
-        @if($tipoDocumento == '01')
-            <h1 class="text-2xl font-bold">Facturas</h1>
-        @elseif($tipoDocumento == '03')
-            <h1 class="text-2xl font-bold">Boletas</h1>
-        @elseif($tipoDocumento == '07')
-            <h1 class="text-2xl font-bold">Notas de Crédito</h1>
-        @else
-            <h1 class="text-2xl font-bold">Todos los Comprobantes</h1>
-        @endif
-        <a href="{{ route('invoices.create', ['company_id' => $companyId]) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Generar Comprobante</a>
-    </div>
-
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
-    @endif
-
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Documento</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado SUNAT</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($invoices as $invoice)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $invoice->document_type_name }} {{ $invoice->full_number }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $invoice->customer->nombre }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $invoice->fecha_emision }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">S/ {{ number_format($invoice->total, 2) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        @switch($invoice->sunat_estado)
-                            @case('PENDIENTE') <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pendiente</span> @break
-                            @case('ENVIADO') <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Enviado</span> @break
-                            @case('ACEPTADO') <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aceptado</span> @break
-                            @case('RECHAZADO') <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rechazado</span> @break
-                            @case('ANULADO') <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Anulado</span> @break
-                        @endswitch
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <a href="{{ route('invoices.show', $invoice) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Ver</a>
-                        @if($invoice->xml_path)
-                            <a href="{{ route('invoices.downloadXml', $invoice) }}" class="text-gray-600 hover:text-gray-900">XML</a>
-                        @endif
-                        @if($invoice->tipo_documento == 'NV')
-                            <span class="ml-2 text-sm text-gray-500">Notas de Venta</span>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay documentos</td></tr>
-                @endforelse
-            </tbody>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Lista de Comprobantes</h3>
+        <div class="card-tools">
+          <a href="{{ route('invoices.create', ['company_id' => $companyId ?? null]) }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Generar Comprobante
+          </a>
+        </div>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estado SUNAT</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($invoices as $invoice)
+            <tr>
+              <td>{{ $invoice->document_type_name }} {{ $invoice->full_number }}</td>
+              <td>{{ $invoice->customer->nombre }}</td>
+              <td>{{ $invoice->fecha_emision }}</td>
+              <td>S/ {{ number_format($invoice->total, 2) }}</td>
+              <td>
+                @switch($invoice->sunat_estado)
+                  @case('PENDIENTE')<span class="badge badge-warning">Pendiente</span>@break
+                  @case('ENVIADO')<span class="badge badge-info">Enviado</span>@break
+                  @case('ACEPTADO')<span class="badge badge-success">Aceptado</span>@break
+                  @case('RECHAZADO')<span class="badge badge-danger">Rechazado</span>@break
+                  @case('ANULADO')<span class="badge badge-secondary">Anulado</span>@break
+                @endswitch
+              </td>
+              <td>
+                <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-info btn-xs"><i class="fas fa-eye"></i></a>
+                <a href="{{ route('invoices.pdf', $invoice) }}" class="btn btn-secondary btn-xs" target="_blank"><i class="fas fa-file-pdf"></i></a>
+                @if($invoice->xml_path)
+                <a href="{{ route('invoices.downloadXml', $invoice) }}" class="btn btn-primary btn-xs"><i class="fas fa-code"></i></a>
+                @endif
+              </td>
+            </tr>
+            @empty
+            <tr><td colspan="6" class="text-center">No hay comprobantes</td></tr>
+            @endforelse
+          </tbody>
         </table>
-        <div class="px-6 py-4">{{ $invoices->links() }}</div>
+        <div class="card-footer">{{ $invoices->links() }}</div>
+      </div>
     </div>
+  </div>
 </div>
 @endsection

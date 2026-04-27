@@ -1,189 +1,196 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+@section('title', 'Dashboard')
+@section('page_title', 'Dashboard')
+
 @section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
-        
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <!-- Total Facturas -->
-            <div class="bg-white overflow-hidden shadow rounded-lg p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
-                        <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Comprobantes</dt>
-                            <dd class="text-lg font-semibold text-gray-900">{{ $stats['total'] }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Facturas Enviadas -->
-            <div class="bg-white overflow-hidden shadow rounded-lg p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
-                        <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Aceptados SUNAT</dt>
-                            <dd class="text-lg font-semibold text-gray-900">{{ $stats['aceptados'] }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pendientes -->
-            <div class="bg-white overflow-hidden shadow rounded-lg p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-yellow-100 rounded-md p-3">
-                        <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Pendientes</dt>
-                            <dd class="text-lg font-semibold text-gray-900">{{ $stats['pendientes'] }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Total Ventas -->
-            <div class="bg-white overflow-hidden shadow rounded-lg p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 bg-indigo-100 rounded-md p-3">
-                        <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0V7m-3 1h4m-4 0H7" />
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Ventas</dt>
-                            <dd class="text-lg font-semibold text-gray-900">S/ {{ number_format($stats['total_ventas'], 2) }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Ventas por Día -->
-            <div class="bg-white overflow-hidden shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Ventas Últimos 7 días</h3>
-                @php
-                    $maxMonto = collect($ventasPorDia)->max('monto') ?: 1;
-                    $maxPorcentaje = collect($ventasPorDia)->max(function($d) use ($maxMonto) {
-                        return $maxMonto > 0 ? ($d['monto'] / $maxMonto) * 100 : 0;
-                    }) ?: 1;
-                @endphp
-                <div class="flex items-end space-x-2 h-48">
-                    @foreach($ventasPorDia as $dia)
-                        @php
-                            $height = $maxMonto > 0 ? ($dia['monto'] / $maxMonto) * 100 : 0;
-                            if ($height == 0) $height = 2;
-                        @endphp
-                        <div class="flex-1 flex flex-col items-center justify-end">
-                            <div class="w-full bg-blue-500 rounded-t" style="height: {{ $height }}%"></div>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="flex space-x-1 mt-2">
-                    @foreach($ventasPorDia as $dia)
-                        <div class="flex-1 text-center text-xs text-gray-500">{{ $dia['dia'] }}</div>
-                    @endforeach
-                </div>
-            </div>
-            
-            <!-- Documentos por Tipo -->
-            <div class="bg-white overflow-hidden shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Documentos por Tipo</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
-                            <span class="text-sm text-gray-600">Facturas</span>
-                        </div>
-                        <span class="text-sm font-medium text-gray-900">{{ $stats['facturas'] }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-                            <span class="text-sm text-gray-600">Boletas</span>
-                        </div>
-                        <span class="text-sm font-medium text-gray-900">{{ $stats['boletas'] }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
-                            <span class="text-sm text-gray-600">Notas de Crédito</span>
-                        </div>
-                        <span class="text-sm font-medium text-gray-900">{{ $stats['notas_credito'] }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Recent Documents -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="px-6 py-4 border-t border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Documentos Recientes</h3>
-            </div>
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Documento</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($recentInvoices as $invoice)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $invoice->document_type_name }} {{ $invoice->full_number }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $invoice->customer->nombre ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $invoice->fecha_emision }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">S/ {{ number_format($invoice->total, 2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @switch($invoice->sunat_estado)
-                                @case('ACEPTADO')
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aceptado</span>
-                                    @break
-                                @case('PENDIENTE')
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>
-                                    @break
-                                @case('ENVIADO')
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Enviado</span>
-                                    @break
-                                @case('RECHAZADO')
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rechazado</span>
-                                    @break
-                                @default
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ $invoice->sunat_estado ?? 'Sin estado' }}</span>
-                            @endswitch
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay documentos</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+
+<div class="row">
+  <!-- Total Comprobantes -->
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-info">
+      <div class="inner">
+        <h3>{{ $stats['total'] }}</h3>
+        <p>Total Comprobantes</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-file-invoice"></i>
+      </div>
     </div>
+  </div>
+  
+  <!-- Aceptados SUNAT -->
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-success">
+      <div class="inner">
+        <h3>{{ $stats['aceptados'] }}</h3>
+        <p>Aceptados SUNAT</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Pendientes -->
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-warning">
+      <div class="inner">
+        <h3>{{ $stats['pendientes'] }}</h3>
+        <p>Pendientes</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-clock"></i>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Total Ventas -->
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-primary">
+      <div class="inner">
+        <h3>S/ {{ number_format($stats['total_ventas'], 2) }}</h3>
+        <p>Total Ventas</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Charts Row -->
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Ventas Últimos 7 días</h3>
+      </div>
+      <div class="card-body">
+        <canvas id="salesChart" style="min-height: 250px;"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Documentos por Tipo</h3>
+      </div>
+      <div class="card-body">
+        <div class="progress-group">
+          <span class="progress-text">Facturas</span>
+          <span class="float-right"><b>{{ $stats['facturas'] }}</b></span>
+          <div class="progress progress-sm">
+            <div class="progress-bar bg-primary" style="width: {{ $stats['total'] > 0 ? ($stats['facturas'] / $stats['total']) * 100 : 0 }}%"></div>
+          </div>
+        </div>
+        <div class="progress-group">
+          <span class="progress-text">Boletas</span>
+          <span class="float-right"><b>{{ $stats['boletas'] }}</b></span>
+          <div class="progress progress-sm">
+            <div class="progress-bar bg-success" style="width: {{ $stats['total'] > 0 ? ($stats['boletas'] / $stats['total']) * 100 : 0 }}%"></div>
+          </div>
+        </div>
+        <div class="progress-group">
+          <span class="progress-text">Notas de Crédito</span>
+          <span class="float-right"><b>{{ $stats['notas_credito'] }}</b></span>
+          <div class="progress progress-sm">
+            <div class="progress-bar bg-warning" style="width: {{ $stats['total'] > 0 ? ($stats['notas_credito'] / $stats['total']) * 100 : 0 }}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Documents -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Documentos Recientes</h3>
+      </div>
+      <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($recentInvoices as $invoice)
+            <tr>
+              <td>{{ $invoice->document_type_name }} {{ $invoice->full_number }}</td>
+              <td>{{ $invoice->customer->nombre ?? '-' }}</td>
+              <td>{{ $invoice->fecha_emision }}</td>
+              <td>S/ {{ number_format($invoice->total, 2) }}</td>
+              <td>
+                @switch($invoice->sunat_estado)
+                  @case('ACEPTADO')
+                    <span class="badge badge-success">Aceptado</span>
+                    @break
+                  @case('PENDIENTE')
+                    <span class="badge badge-warning">Pendiente</span>
+                    @break
+                  @case('ENVIADO')
+                    <span class="badge badge-info">Enviado</span>
+                    @break
+                  @case('RECHAZADO')
+                    <span class="badge badge-danger">Rechazado</span>
+                    @break
+                  @default
+                    <span class="badge badge-secondary">{{ $invoice->sunat_estado ?? 'Sin estado' }}</span>
+                @endswitch
+              </td>
+            </tr>
+            @empty
+            <tr>
+              <td colspan="5" class="text-center">No hay documentos</td>
+            </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const salesCtx = document.getElementById('salesChart').getContext('2d');
+new Chart(salesCtx, {
+  type: 'bar',
+  data: {
+    labels: {!! json_encode(collect($ventasPorDia)->pluck('dia')) !!},
+    datasets: [{
+      label: 'Ventas',
+      data: {!! json_encode(collect($ventasPorDia)->pluck('monto')) !!},
+      backgroundColor: 'rgba(60, 141, 188, 0.8)',
+      borderColor: 'rgba(60, 141, 188, 1)',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return 'S/ ' + value.toFixed(2);
+          }
+        }
+      }
+    }
+  }
+});
+</script>
+@endpush
+
 @endsection

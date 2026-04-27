@@ -14,10 +14,10 @@ use App\Http\Controllers\ThemeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
+    return redirect('/login');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 Route::post('/theme', [ThemeController::class, 'change'])->name('theme.change')->middleware('auth');
 
 Route::middleware('auth')->group(function () {

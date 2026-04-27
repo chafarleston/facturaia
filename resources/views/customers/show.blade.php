@@ -1,21 +1,66 @@
-@extends('layouts.app')
-@section('content')
-<div class="max-w-3xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <h1 class="text-2xl font-bold mb-6">Cliente: {{ $customer->nombre }}</h1>
+@extends('layouts.admin')
+@section('title', 'Ver Cliente')
+@section('page_title', 'Ver Cliente')
 
-    <div class="bg-white shadow rounded-lg p-6">
-        <div class="grid grid-cols-2 gap-4">
-            <div><p class="text-gray-500">Documento</p><p class="font-medium">{{ $customer->documento_tipo == '1' ? 'DNI' : 'RUC' }}: {{ $customer->documento_numero }}</p></div>
-            <div><p class="text-gray-500">Email</p><p class="font-medium">{{ $customer->email }}</p></div>
-            <div><p class="text-gray-500">Teléfono</p><p class="font-medium">{{ $customer->telefono }}</p></div>
-            <div><p class="text-gray-500">Dirección</p><p class="font-medium">{{ $customer->direccion }}</p></div>
-            <div><p class="text-gray-500">Estado</p><p class="font-medium">{{ $customer->estado }}</p></div>
+@section('content')
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Cliente: {{ $customer->nombre }}</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon bg-primary"><i class="fas fa-id-card"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Documento</span>
+                        <span class="info-box-number">{{ $customer->documento_tipo == '1' ? 'DNI' : 'RUC' }}: {{ $customer->documento_numero }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon bg-info"><i class="fas fa-envelope"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Email</span>
+                        <span class="info-box-number">{{ $customer->email }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon bg-success"><i class="fas fa-phone"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Teléfono</span>
+                        <span class="info-box-number">{{ $customer->telefono }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="info-box">
+                    <span class="info-box-icon bg-warning"><i class="fas fa-map-marker-alt"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Dirección</span>
+                        <span class="info-box-number">{{ $customer->direccion }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-box">
+                    <span class="info-box-icon bg-{{ $customer->estado == 'ACT' ? 'success' : 'danger' }}"><i class="fas fa-power-off"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Estado</span>
+                        <span class="info-box-number">{{ $customer->estado }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="mt-6 flex">
-        <a href="{{ route('customers.edit', $customer) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded mr-4">Editar</a>
-        <a href="{{ route('customers.index') }}" class="text-gray-600 hover:text-gray-900">Volver</a>
+    <div class="card-footer">
+        <a href="{{ route('customers.edit', $customer) }}" class="btn btn-warning"><i class="fas fa-edit"></i> Editar</a>
+        <a href="{{ route('customers.index') }}" class="btn btn-secondary">Volver</a>
     </div>
 </div>
 @endsection

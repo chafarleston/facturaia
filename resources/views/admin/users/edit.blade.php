@@ -1,28 +1,36 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+@section('title', 'Editar Usuario')
+@section('page_title', 'Editar Usuario')
+
 @section('content')
-<div class="max-w-3xl mx-auto py-8">
-  <h2 class="text-xl font-semibold mb-4">Editar Usuario</h2>
-  <form action="{{ route('users.update', $user) }}" method="POST" class="space-y-4">
-    @csrf
-    @method('PUT')
-    <div>
-      <label class="block text-sm">Nombre</label>
-      <input name="name" value="{{ $user->name }}" class="w-full border rounded p-2" />
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Editar Usuario</h3>
     </div>
-    <div>
-      <label class="block text-sm">Email</label>
-      <input type="email" name="email" value="{{ $user->email }}" class="w-full border rounded p-2" />
-    </div>
-    <div>
-      <label class="block text-sm">Rol</label>
-      <select name="role" class="w-full border rounded p-2">
-        <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Usuario</option>
-        <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Administrador</option>
-      </select>
-    </div>
-    <div>
-      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Actualizar</button>
-    </div>
-  </form>
+    <form action="{{ route('users.update', $user) }}" method="POST">
+        @csrf
+        @method('PUT')
+        <div class="card-body">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input name="name" value="{{ $user->name }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ $user->email }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Rol</label>
+                <select name="role" class="form-control">
+                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Usuario</option>
+                    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Administrador</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
 </div>
 @endsection
