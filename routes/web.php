@@ -8,6 +8,7 @@ use App\Http\Controllers\SerieController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\CustomerApiController;
 use App\Http\Controllers\DecolectaController;
 use App\Http\Controllers\ProfileController;
@@ -38,6 +39,11 @@ Route::middleware('auth')->group(function () {
         Route::resource('categories', CategoryController::class);
         Route::resource('suppliers', SupplierController::class);
         Route::resource('purchases', PurchaseController::class);
+        Route::resource('cashregisters', CashRegisterController::class);
+        Route::get('/cashregisters/{cashregister}/pdf', [CashRegisterController::class, 'pdf'])->name('cashregisters.pdf');
+        Route::get('/cashregisters/{cashregister}/ticket', [CashRegisterController::class, 'ticketPdf'])->name('cashregisters.ticket');
+        Route::post('/cashregister/open', [CashRegisterController::class, 'open'])->name('cashregisters.open');
+        Route::post('/cashregister/close', [CashRegisterController::class, 'close'])->name('cashregisters.close');
         Route::resource('series', SerieController::class);
         Route::resource('users', \App\Http\Controllers\UserController::class);
         // Descargar padrón SUNAT (manual)

@@ -412,6 +412,22 @@ class GreenterService
         </div>
         ';
         
+        $pagoInfo = '';
+        if (!empty($invoice->metodo_pago)) {
+            $metodo = $invoice->metodo_pago;
+            $ref = $invoice->referencia_pago ? ' - ' . e($invoice->referencia_pago) : '';
+            $pagoInfo = '
+            <div class="border-top py-1 mt-1">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td><b>FORMA PAGO:</b></td>
+                        <td class="text-right">' . e($metodo) . $ref . '</td>
+                    </tr>
+                </table>
+            </div>
+            ';
+        }
+        
         $sunatInfo = '';
         $qrImg = '';
         if ($qrUrl) {
@@ -457,6 +473,7 @@ class GreenterService
                 ' . $itemsHeader . '
                 ' . $itemsBody . '
                 ' . $totals . '
+                ' . $pagoInfo . '
                 ' . $qrImg . ' ' . $hashBlock . ' ' . $sunatInfo . '
                 ' . $footer . '
             </div>
@@ -584,6 +601,15 @@ class GreenterService
                 font-size: 12px;
             }
             
+            .pago-section {
+                margin-top: 10px;
+                padding-top: 10px;
+                border-top: 1px solid #ddd;
+            }
+            .pago-section .totals-table {
+                width: 200px;
+            }
+            
             .footer {
                 margin-top: 20px;
                 padding-top: 10px;
@@ -683,6 +709,22 @@ class GreenterService
         </div>
         ';
         
+        $pagoInfo = '';
+        if (!empty($invoice->metodo_pago)) {
+            $metodo = $invoice->metodo_pago;
+            $ref = $invoice->referencia_pago ? ' - ' . e($invoice->referencia_pago) : '';
+            $pagoInfo = '
+            <div class="pago-section">
+                <table class="totals-table">
+                    <tr>
+                        <td class="label"><strong>Forma de Pago:</strong></td>
+                        <td class="value">' . e($metodo) . $ref . '</td>
+                    </tr>
+                </table>
+            </div>
+            ';
+        }
+        
         $sunatInfo = '';
         if ($invoice->sunat_estado == 'ACEPTADO') {
             $sunatInfo = '
@@ -712,6 +754,7 @@ class GreenterService
             ' . $clientSection . '
             ' . $itemsTable . '
             ' . $totals . '
+            ' . $pagoInfo . '
             ' . $sunatInfo . '
             ' . $footer . ' ' . $qrImg . ' ' . $hashBlock . '
         </body>

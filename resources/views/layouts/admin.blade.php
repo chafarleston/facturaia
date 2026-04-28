@@ -181,6 +181,13 @@
                 </li>
               </ul>
             </li>
+            
+            <li class="nav-item">
+              <a href="{{ route('cashregisters.index') }}" class="nav-link {{ request()->routeIs('cashregisters.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-cash-register"></i>
+                <p>Caja</p>
+              </a>
+            </li>
 
           </ul>
         </nav>
