@@ -63,7 +63,10 @@ class CashRegisterController extends Controller
         $companyId = $caja->company_id;
         
         $ventas = Invoice::where('company_id', $companyId)
-            ->whereBetween('fecha_emision', [$caja->fecha_apertura->format('Y-m-d'), now()->format('Y-m-d')])
+            ->whereBetween('fecha_emision', [
+                \Carbon\Carbon::parse($caja->fecha_apertura)->format('Y-m-d'), 
+                now()->format('Y-m-d')
+            ])
             ->where('sunat_estado', '!=', 'ANULADO')
             ->get();
 
@@ -123,8 +126,8 @@ class CashRegisterController extends Controller
     {
         $ventas = Invoice::where('company_id', $cashregister->company_id)
             ->whereBetween('fecha_emision', [
-                $cashregister->fecha_apertura->format('Y-m-d'),
-                $cashregister->fecha_cierre ? $cashregister->fecha_cierre->format('Y-m-d') : now()->format('Y-m-d')
+                \Carbon\Carbon::parse($cashregister->fecha_apertura)->format('Y-m-d'),
+                $cashregister->fecha_cierre ? \Carbon\Carbon::parse($cashregister->fecha_cierre)->format('Y-m-d') : now()->format('Y-m-d')
             ])
             ->where('sunat_estado', '!=', 'ANULADO')
             ->get();
@@ -140,8 +143,10 @@ class CashRegisterController extends Controller
     {
         $ventas = Invoice::where('company_id', $cashregister->company_id)
             ->whereBetween('fecha_emision', [
-                $cashregister->fecha_apertura->format('Y-m-d'),
-                $cashregister->fecha_cierre ? $cashregister->fecha_cierre->format('Y-m-d') : now()->format('Y-m-d')
+                \Carbon\Carbon::parse($cashregister->fecha_apertura)->format('Y-m-d'),
+                $cashregister->fecha_cierre 
+                    ? \Carbon\Carbon::parse($cashregister->fecha_cierre)->format('Y-m-d') 
+                    : now()->format('Y-m-d')
             ])
             ->where('sunat_estado', '!=', 'ANULADO')
             ->get();
@@ -168,8 +173,8 @@ class CashRegisterController extends Controller
     {
         $ventas = Invoice::where('company_id', $cashregister->company_id)
             ->whereBetween('fecha_emision', [
-                $cashregister->fecha_apertura->format('Y-m-d'),
-                $cashregister->fecha_cierre ? $cashregister->fecha_cierre->format('Y-m-d') : now()->format('Y-m-d')
+                \Carbon\Carbon::parse($cashregister->fecha_apertura)->format('Y-m-d'),
+                $cashregister->fecha_cierre ? \Carbon\Carbon::parse($cashregister->fecha_cierre)->format('Y-m-d') : now()->format('Y-m-d')
             ])
             ->where('sunat_estado', '!=', 'ANULADO')
             ->get();

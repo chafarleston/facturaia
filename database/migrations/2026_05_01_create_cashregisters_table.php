@@ -11,8 +11,8 @@ return new class extends Migration
         if (!Schema::hasTable('cashregisters')) {
             Schema::create('cashregisters', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('company_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->unsignedBigInteger('company_id');
+                $table->unsignedBigInteger('user_id');
                 $table->decimal('monto_apertura', 12, 2)->default(0);
                 $table->decimal('monto_cierre', 12, 2)->nullable();
                 $table->decimal('ventas_efectivo', 12, 2)->default(0);

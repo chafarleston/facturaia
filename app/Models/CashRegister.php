@@ -9,6 +9,8 @@ class CashRegister extends Model
 {
     use HasFactory;
 
+    protected $table = 'cashregisters';
+
     protected $fillable = [
         'company_id', 'user_id', 'monto_apertura', 'monto_cierre',
         'ventas_efectivo', 'ventas_tarjeta', 'ventas_yape', 'ventas_plin', 'ventas_otro',
@@ -24,6 +26,8 @@ class CashRegister extends Model
         'ventas_plin' => 'decimal:2',
         'ventas_otro' => 'decimal:2',
         'total_ventas' => 'decimal:2',
+        'fecha_apertura' => 'datetime',
+        'fecha_cierre' => 'datetime',
     ];
 
     public function company()

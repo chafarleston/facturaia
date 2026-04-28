@@ -168,7 +168,6 @@ class InvoiceController extends Controller
             'exclude_from_totals' => $excludeFromTotals,
             'metodo_pago' => $request->metodo_pago ?? 'EFECTIVO',
             'referencia_pago' => $request->referencia_pago,
-            'cashregister_id' => $this->getOpenCashRegisterId($validated['company_id']),
         ]);
 
         foreach ($itemsData as $item) {
@@ -360,13 +359,5 @@ class InvoiceController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
-    }
-    
-    private function getOpenCashRegisterId($companyId)
-    {
-        $caja = \App\Models\CashRegister::where('company_id', $companyId)
-            ->where('estado', 'ABIERTA')
-            ->first();
-        return $caja ? $caja->id : null;
     }
 }
