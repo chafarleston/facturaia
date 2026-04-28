@@ -43,6 +43,15 @@
                     </div>
                     <div class="col-md-3">
                         <div class="info-box">
+                            <span class="info-box-icon bg-success"><i class="fas fa-money-bill"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Método de Pago</span>
+                                <span class="info-box-number">{{ $invoice->metodo_pago ?? 'EFECTIVO' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="info-box">
                             <span class="info-box-icon bg-{{ $invoice->sunat_estado == 'ACEPTADO' || $invoice->sunat_estado == 'ENVIADO' ? 'success' : 'danger' }}"><i class="fas fa-cloud-upload-alt"></i></span>
                             <div class="info-box-content">
                                 <span class="info-box-text">Estado SUNAT</span>

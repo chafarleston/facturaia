@@ -51,6 +51,25 @@
                         <input type="date" name="fecha_emision" class="form-control" required value="{{ date('Y-m-d') }}">
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Método de Pago</label>
+                        <select name="metodo_pago" id="metodo_pago" class="form-control" onchange="updateReferencia()">
+                            <option value="EFECTIVO">Efectivo</option>
+                            <option value="TARJETA">Tarjeta</option>
+                            <option value="YAPE">Yape</option>
+                            <option value="PLIN">Plin</option>
+                            <option value="DEPOSITO">Depósito</option>
+                            <option value="TRANSFERENCIA">Transferencia</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Referencia (opcional)</label>
+                        <input type="text" name="referencia_pago" id="referencia_pago" class="form-control" placeholder="N° operación / código">
+                    </div>
+                </div>
             </div>
 
             <div class="card card-secondary mb-3">
@@ -227,6 +246,7 @@ function updateTipoDocumento() {
 document.addEventListener('DOMContentLoaded', function() {
     updateSerie();
     updateStockDisplay();
+    updateReferencia();
 });
 
 let items = [];
@@ -327,6 +347,26 @@ function setCustomer() {
     document.getElementById('customer-status').textContent = '✓ Cliente establecido';
     document.getElementById('customer-status').className = 'text-sm text-success';
     document.getElementById('setCustomerBtn').style.display = 'none';
+}
+
+function updateReferencia() {
+    const metodo = document.getElementById('metodo_pago').value;
+    const refInput = document.getElementById('referencia_pago');
+    
+    if (metodo === 'EFECTIVO') {
+        refInput.value = '';
+        refInput.placeholder = 'No requiere referencia';
+        refInput.disabled = true;
+    } else if (metodo === 'YAPE' || metodo === 'PLIN') {
+        refInput.placeholder = 'Ingrese número de operación';
+        refInput.disabled = false;
+    } else if (metodo === 'TARJETA') {
+        refInput.placeholder = 'Ingrese últimos 4 dígitos';
+        refInput.disabled = false;
+    } else {
+        refInput.placeholder = 'N° operación / código';
+        refInput.disabled = false;
+    }
 }
 
 document.getElementById('productSelect').addEventListener('change', function() {

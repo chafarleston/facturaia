@@ -71,6 +71,8 @@ class InvoiceController extends Controller
             'tipo_documento' => 'required|in:01,03,NV',
             'serie_id' => 'required|exists:series,id',
             'fecha_emision' => 'required|date',
+            'metodo_pago' => 'nullable|string|max:50',
+            'referencia_pago' => 'nullable|string|max:100',
         ], [
             'company_id.required' => 'Falta company_id',
             'tipo_documento.required' => 'Falta tipo de documento',
@@ -163,7 +165,9 @@ class InvoiceController extends Controller
             'total' => $total,
             'total_letras' => $totalLetras,
             'sunat_estado' => 'PENDIENTE',
-            'exclude_from_totals' => $excludeFromTotals
+            'exclude_from_totals' => $excludeFromTotals,
+            'metodo_pago' => $request->metodo_pago ?? 'EFECTIVO',
+            'referencia_pago' => $request->referencia_pago,
         ]);
 
         foreach ($itemsData as $item) {
