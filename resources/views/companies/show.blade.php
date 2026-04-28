@@ -25,7 +25,7 @@
                             <span class="info-box-icon bg-info"><i class="fas fa-tag"></i></span>
                             <div class="info-box-content">
                                 <span class="info-box-text">Tipo</span>
-                                <span class="info-box-number">{{ $company->tipo_contribuyente }}</span>
+                                <span class="info-box-number">{{ $company->getTipoContribuyenteNombre() }}</span>
                             </div>
                         </div>
                     </div>
