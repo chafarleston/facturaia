@@ -20,7 +20,7 @@ class CompanyController extends Controller
         return view('companies.create');
     }
 
-    public function store(Request $request)
+public function store(Request $request)
     {
         $validated = $request->validate([
             'ruc' => ['required', 'size:11', 'unique:companies'],
@@ -29,7 +29,7 @@ class CompanyController extends Controller
             'direccion' => 'nullable',
             'telefono' => 'nullable',
             'email' => 'nullable|email',
-            'tipo_contribuyente' => ['nullable', Rule::in(['RIESGO', 'MYPES', 'OTROS'])],
+            'tipo_contribuyente' => 'nullable',
         ]);
 
         Company::create($validated);
@@ -56,7 +56,7 @@ class CompanyController extends Controller
             'direccion' => 'nullable',
             'telefono' => 'nullable',
             'email' => 'nullable|email',
-            'tipo_contribuyente' => ['nullable', Rule::in(['RIESGO', 'MYPES', 'OTROS'])],
+            'tipo_contribuyente' => 'nullable',
         ]);
 
         $company->update($validated);
@@ -69,12 +69,23 @@ class CompanyController extends Controller
         \Log::info('Uploading certificate', ['company' => $company->id, 'hasFile' => $request->hasFile('certificado')]);
         
         $request->validate([
-            'certificado' => 'required|file',
+            'certificado' => 'required|file|mimes:p12,pfx',
             'certificado_password' => 'required|string',
         ]);
 
         try {
             $filename = $company->ruc . '_certificate.pfx';
+            $tempPath = $request->file('certificado')->getRealPath();
+            
+            // Verify certificate password before saving
+            $certificateContent = file_get_contents($tempPath);
+            $password = $request->certificado_password;
+            
+            if (!openssl_pkcs12_read($certificateContent, $certInfo, $password)) {
+                return back()->with('error', 'La clave proporcionada no es correcta. Verifique e intente de nuevo.');
+            }
+            
+            // Save certificate only after validation
             $path = $request->file('certificado')->storeAs('certificates', $filename);
             
             \Log::info('Certificate stored', ['path' => $path, 'filename' => $filename]);
