@@ -191,31 +191,105 @@ class DecolectaController extends Controller
     
     private function searchInSunatPadron($ruc)
     {
+        // Primero buscar en archivo local
         $files = glob(storage_path('app/padron*.txt'));
         
-        if (empty($files)) {
-            return null;
-        }
-        
-        $filePath = $files[0];
-        $handle = fopen($filePath, 'r');
-        
-        while (($line = fgets($handle)) !== false) {
-            $parts = explode('|', trim($line));
+        if (!empty($files)) {
+            $filePath = $files[0];
+            $handle = fopen($filePath, 'r');
             
-            if (isset($parts[0]) && strlen($parts[0]) === 11 && $parts[0] === $ruc) {
-                fclose($handle);
-                return [
-                    'ruc' => $parts[0] ?? '',
-                    'razon_social' => $parts[1] ?? '',
-                    'estado' => $parts[2] ?? '',
-                    'condicion' => $parts[3] ?? '',
-                    'direccion' => $parts[4] ?? '',
-                ];
+            while (($line = fgets($handle)) !== false) {
+                $parts = explode('|', trim($line));
+                
+                if (isset($parts[0]) && strlen($parts[0]) === 11 && $parts[0] === $ruc) {
+                    fclose($handle);
+                    return [
+                        'ruc' => $parts[0] ?? '',
+                        'razon_social' => $parts[1] ?? '',
+                        'estado' => $parts[2] ?? '',
+                        'condicion' => $parts[3] ?? '',
+                        'direccion' => $parts[4] ?? '',
+                    ];
+                }
             }
+            
+            fclose($handle);
         }
         
-        fclose($handle);
+        // Si no está en padrón local, buscar en API SUNAT en tiempo real
+        return $this->searchSunatApi($ruc);
+    }
+    
+    private function searchSunatApi($ruc)
+    {
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://api.sunat.club/ruc/' . $ruc);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Accept: application/json',
+                'User-Agent: Mozilla/5.0'
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($httpCode === 200 && $response) {
+                $data = json_decode($response, true);
+                
+                if (isset($data['success']) && $data['success'] === true) {
+                    return [
+                        'ruc' => $ruc,
+                        'razon_social' => $data['data']['razon_social'] ?? $data['data']['nombre'] ?? '',
+                        'estado' => $data['data']['estado'] ?? '',
+                        'condicion' => $data['data']['condicion'] ?? '',
+                        'direccion' => $data['data']['direccion'] ?? $data['data']['domicilio'] ?? '',
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error consulta SUNAT API: ' . $e->getMessage());
+        }
+        
+        // Intentar con API alternativa
+        return $this->searchSunatApiAlternative($ruc);
+    }
+    
+    private function searchSunatApiAlternative($ruc)
+    {
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://apis.login.peruapi.com/ruc/' . $ruc);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Accept: application/json',
+                'Authorization: Bearer factuPeruFreeToken'
+            ]);
+            
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            if ($response) {
+                $data = json_decode($response, true);
+                
+                if (isset($data['result']) && $data['result'] === 'ok') {
+                    return [
+                        'ruc' => $ruc,
+                        'razon_social' => $data['nombre'] ?? '',
+                        'estado' => $data['estado'] ?? '',
+                        'direccion' => $data['direccion'] ?? '',
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error API alternativa: ' . $e->getMessage());
+        }
+        
         return null;
     }
 }

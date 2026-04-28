@@ -65,6 +65,22 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon {{ $product->stock < 0 ? 'bg-danger' : ($product->stock == 0 ? 'bg-warning' : 'bg-info') }}">
+                        <i class="fas fa-cubes"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Stock</span>
+                        <span class="info-box-number {{ $product->stock < 0 ? 'text-danger font-weight-bold' : '' }}">
+                            {{ $product->stock }}
+                            @if($product->stock < 0)
+                                <small class="text-muted">(Saldo negativo)</small>
+                            @endif
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card-footer">

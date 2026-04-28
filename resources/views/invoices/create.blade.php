@@ -110,9 +110,9 @@
                         <div class="alert alert-danger">No hay productos registrados. <a href="{{ route('products.create', ['company_id' => $company->id]) }}" class="text-primary">Crear producto</a></div>
                     @else
                     <div class="row align-items-end">
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="form-group mb-0">
-                                <label>Producto</label>
+                                <label>Producto <span id="stock-display" class="ml-2"></span></label>
                                 <select id="productSelect" class="form-control">
                                     <option value="">Seleccionar producto</option>
                                     @foreach($products as $product)
@@ -226,6 +226,7 @@ function updateTipoDocumento() {
 
 document.addEventListener('DOMContentLoaded', function() {
     updateSerie();
+    updateStockDisplay();
 });
 
 let items = [];
@@ -331,7 +332,28 @@ function setCustomer() {
 document.getElementById('productSelect').addEventListener('change', function() {
     const option = this.options[this.selectedIndex];
     document.getElementById('itemPrice').value = option.dataset.price || '';
+    updateStockDisplay();
 });
+
+function updateStockDisplay() {
+    const select = document.getElementById('productSelect');
+    const option = select.options[select.selectedIndex];
+    if (!option.value) {
+        document.getElementById('stock-display').textContent = '';
+        return;
+    }
+    const baseStock = parseInt(option.dataset.stock) || 0;
+    const addedQty = items.filter(i => i.product_id === option.value).reduce((sum, i) => sum + i.cantidad, 0);
+    const availableStock = baseStock - addedQty;
+    const displayEl = document.getElementById('stock-display');
+    if (availableStock <= 0) {
+        displayEl.textContent = '⚠️ Stock: 0';
+        displayEl.className = 'text-danger font-weight-bold ml-2';
+    } else {
+        displayEl.textContent = 'Disp: ' + availableStock;
+        displayEl.className = 'text-success ml-2';
+    }
+}
 
 function agregarItem() {
     const select = document.getElementById('productSelect');
@@ -339,31 +361,39 @@ function agregarItem() {
     if (!option.value) { alert('Seleccione un producto'); return; }
     const qty = parseFloat(document.getElementById('itemQty').value);
     const price = Math.round(parseFloat(document.getElementById('itemPrice').value) * 100) / 100;
-    const stock = parseInt(option.dataset.stock) || 0;
+    const baseStock = parseInt(option.dataset.stock) || 0;
     
-    if (!qty || !price) { alert('Ingrese cantidad y precio'); return; }
+    if (!qty || !price || qty <= 0) { alert('Ingrese cantidad válida'); return; }
     
-    // Verificar stock
-    if (stock < qty && stock > 0) {
-        if (!confirm('Stock insuficiente. Stock actual: ' + stock + '. ¿Desea generar Venta con Saldo negativo?')) {
-            return;
-        }
-    } else if (stock === 0) {
-        if (!confirm('Stock en cero. ¿Desea generar Venta con Saldo negativo?')) {
-            return;
+    // Calcular stock ya agregado en esta factura para este producto
+    const addedQty = items.filter(i => i.product_id === option.value).reduce((sum, i) => sum + i.cantidad, 0);
+    const availableStock = baseStock - addedQty;
+    
+    // Verificar stock disponible
+    if (availableStock < qty) {
+        if (availableStock <= 0) {
+            if (!confirm('Stock agotado (0). ¿Desea generar Venta con Stock negativo?')) {
+                return;
+            }
+        } else {
+            if (!confirm('Stock insuficiente. Disponible: ' + availableStock + '. ¿Desea generar Venta con Stock negativo?')) {
+                return;
+            }
         }
     }
     
-    items.push({ product_id: option.value, codigo: option.dataset.code, descripcion: option.dataset.name, cantidad: qty, precio: price });
+    items.push({ product_id: option.value, codigo: option.dataset.code, descripcion: option.dataset.name, cantidad: qty, precio: price, stock: baseStock });
     renderItems();
     select.value = '';
     document.getElementById('itemQty').value = '1';
     document.getElementById('itemPrice').value = '';
+    updateStockDisplay();
 }
 
 function removeItem(index) {
     items.splice(index, 1);
     renderItems();
+    updateStockDisplay();
 }
 
 function renderItems() {

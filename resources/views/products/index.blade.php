@@ -43,7 +43,15 @@
               <td>{{ $product->category->nombre ?? '-' }}</td>
               <td>S/ {{ number_format($product->precio, 2) }}</td>
               <td>{{ $product->tipo_afectacion }}</td>
-              <td>{{ $product->stock }}</td>
+              <td>
+                @if($product->stock < 0)
+                  <span class="text-danger font-weight-bold">{{ $product->stock }}</span>
+                @elseif($product->stock == 0)
+                  <span class="text-warning font-weight-bold">{{ $product->stock }}</span>
+                @else
+                  {{ $product->stock }}
+                @endif
+              </td>
               <td>
                 <a href="{{ route('products.show', $product) }}" class="btn btn-info btn-xs"><i class="fas fa-eye"></i></a>
                 <a href="{{ route('products.edit', $product) }}" class="btn btn-warning btn-xs"><i class="fas fa-edit"></i></a>
