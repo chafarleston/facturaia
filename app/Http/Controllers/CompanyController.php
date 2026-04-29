@@ -66,29 +66,26 @@ public function store(Request $request)
 
     public function updateCertificate(Request $request, Company $company)
     {
-        \Log::info('Uploading certificate', ['company' => $company->id, 'hasFile' => $request->hasFile('certificado')]);
-        
         $request->validate([
-            'certificado' => 'required|file|mimes:p12,pfx',
+            'certificado' => 'required|file',
             'certificado_password' => 'required|string',
         ]);
 
         try {
             $filename = $company->ruc . '_certificate.pfx';
             $tempPath = $request->file('certificado')->getRealPath();
-            
-            // Verify certificate password before saving
-            $certificateContent = file_get_contents($tempPath);
             $password = $request->certificado_password;
             
-            if (!openssl_pkcs12_read($certificateContent, $certInfo, $password)) {
+            $certificateContent = file_get_contents($tempPath);
+            
+            $certInfo = [];
+            $readResult = @openssl_pkcs12_read($certificateContent, $certInfo, $password);
+            
+            if (!$readResult) {
                 return back()->with('error', 'La clave proporcionada no es correcta. Verifique e intente de nuevo.');
             }
             
-            // Save certificate only after validation
             $path = $request->file('certificado')->storeAs('certificates', $filename);
-            
-            \Log::info('Certificate stored', ['path' => $path, 'filename' => $filename]);
 
             if (!$path) {
                 return back()->with('error', 'Error al guardar el archivo');
@@ -100,9 +97,8 @@ public function store(Request $request)
                 'certificado_password' => $request->certificado_password,
             ]);
 
-            return back()->with('success', 'Certificado actualizado correctamente');
+return back()->with('success', 'Certificado actualizado correctamente');
         } catch (\Exception $e) {
-            \Log::error('Certificate upload error', ['error' => $e->getMessage()]);
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
