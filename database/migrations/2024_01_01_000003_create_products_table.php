@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('descripcion');
             $table->string('codigo_sunat', 8)->nullable();
             $table->string('umedida_codigo', 3)->default('NIU');
-            $table->decimal('precio', 12, 2);
+            $table->decimal('precio', 12, 2)->default(0);
             $table->decimal('precio_minimo', 12, 2)->nullable();
             $table->enum('tipo_afectacion', ['GRA', 'EXO', 'INA', 'EXE'])->default('GRA');
             $table->decimal('igv_percent', 5, 2)->default(18);

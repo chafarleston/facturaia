@@ -55,6 +55,16 @@ class ProductController extends Controller
             'stock' => 'nullable|integer|min:0',
         ]);
 
+        if (is_null($validated['precio'] ?? null)) {
+            if ($request->input('precio_con_igv') !== null) {
+                $validated['precio'] = $request->input('precio_con_igv');
+            } elseif ($request->input('precio_sin_igv') !== null) {
+                $validated['precio'] = $request->input('precio_sin_igv');
+            } else {
+                $validated['precio'] = 0;
+            }
+        }
+
         $validated['stock'] = $validated['stock'] ?? 0;
         $validated['umedida_codigo'] = $validated['umedida_codigo'] ?? 'NIU';
         $validated['igv_percent'] = $validated['igv_percent'] ?? 18;
