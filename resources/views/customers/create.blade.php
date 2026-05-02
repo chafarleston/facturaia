@@ -67,7 +67,7 @@
 </div>
 @endsection
 
-@section('js')
+@push('scripts')
 <script>
 const companyId = {{ $companyId }};
 
@@ -110,4 +110,4 @@ function buscarCliente() {
         });
 }
 </script>
-@endsection
+@endpush
